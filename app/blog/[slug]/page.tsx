@@ -26,7 +26,7 @@ export default async function BlogPost({ params }: PageProps) {
           <time className="text-gray-600">{post.date}</time>
         </header>
 
-        <div className="prose prose-lg max-w-none text-black">
+        <div className="prose prose-lg max-w-none">
           {post.blocks.map((block, i) => {
             if (block.type === "paragraph") {
               return <p key={i} className="mb-6 leading-relaxed">{block.text}</p>;

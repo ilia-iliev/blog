@@ -26,10 +26,7 @@ export default function About() {
               I'm based in Sofia, Bulgaria. I like to read books and recently started documenting my thoughts on anything I read
               <a href="https://github.com/ilia-iliev/booknote"> here</a>. I keep a similar repo regarding
               <a href="https://github.com/ilia-iliev/papernote"> AI papers</a>.
-            </p>
-
-            <p>
-              I'm based in Sofia, Bulgaria. I like hiking
+              I also like hiking.
             </p>
           </div>
         </div>
