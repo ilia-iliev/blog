@@ -1,0 +1,22 @@
+Audio and Machine Learning
+2026-69-69
+
+This is my attempt at explaining how audio is represented in ML models. It's mostly curiousity - those are insights from reading about it.
+
+But first, what is audio? Well we all have seen images of a soundwave, just like that one:
+
+[soundwave.png]
+
+We have an audio signal (soundwave) and a receiver (a microphone). At each sample (in the order of 44k times a second for CD-quality), the microphone has a highly sensitive diaphragm that reacts to the soundwave and records the pressure. In other words, the diapgrahm reacts to the sound many times a second and we take a snapshot. Better mics can record more often and have a better sound range, but the principle is simple. And when we plot all the values, we get a reconstruction of the soundwave, just like the image above.
+
+Okay, so audio is pretty much already just a vector of numbers. However, those numbers have a few properties that we can utilize for better representation or easing our problem. There's really no need to represent ALL possible sounds that a mic can pick up. Below is something that most audio models are interested in - a typical soundwave representation of the letters in the English alphabet. Of course, this is just a representation; different accents will be slightly different
+
+[alphabet.jpg] 
+
+So if we're interested primarily in the English language, it makes sense to learning how to differentiate between those sounds. Where it gets tricky is if there's background noise or several people speaking at the same time - as our "soundwave" is no longer the clear one as in the image but we have two or more soundwaves overlaid on top of each other. 
+
+Okay, enough background. Let's now look into modeling.
+
+A notable breakthrough in audio modeling is wav2vec (2019, Facebook)- and it directly deals with the soundwaves. In simple terms, it was trained on a huge corpus of recorded speech to train a neural net (with convolution) to predict a value in the future. Or rather, the model learnt to 'pick' the correct value over incorrect values (i.e. contrastive loss). There were 2 main issues with wav2vec. First, each input leads to changing the internal representation; meaning that it was purely an encoder and it required an additional model to actually generate output. Second, using the raw vectors is theoretically enough to model sound but we can optimize the problem by focusing only on the sound properties that actually make a difference; i.e. it's much more meaningful and hard to teach the model to differentiate between "b" and "p" than to differentiate between "b" and an airplane flying past.
+
+And, of course, wav2vec was supreseded by wav2vec 2.0 (2020, Facebook). Still trained on raw audio but it now uses a mix of convolution and transformer. And we no longer predict in the future, but we predict masked values in the sequence - similar to BERT, but adapted to audio. However, those are architectural changes that simply modernized the modeling by the standards of the time; a much more interesting "breakthrough" was the quantization or tokenization of the raw audio. Since it's really difficult to apply a preprocessing heuristic that works like BPE to audio, the authors did a clever trick [EXPLAIN  THE GUMBEL SOFTMAX]
