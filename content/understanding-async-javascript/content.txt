@@ -1,0 +1,10 @@
+Understanding Asynchronous JavaScript
+2025-10-01
+
+Deep dive into Promises, Async/Await, and the Event Loop. JavaScript is single-threaded, but that doesn't mean it can only do one thing at a time. The secret lies in asynchronous programming.
+
+The Event Loop is the heart of it all. It continuously checks whether the call stack is empty, then pulls the next task from the queue. This is how setTimeout, fetch, and other async operations work without blocking the main thread.
+
+Promises gave us a cleaner way to handle async results. Instead of nested callbacks, we chain .then() calls. But the real game-changer was async/await — it lets us write asynchronous code that reads like synchronous code.
+
+Error handling matters. Always wrap your await calls in try/catch blocks, or use .catch() on your promise chains. Unhandled rejections are silent bugs waiting to bite you in production.
