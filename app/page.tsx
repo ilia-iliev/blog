@@ -17,7 +17,7 @@ export default function Home() {
       </section>
 
       {/* Post Lists */}
-      <PostList title="Posts" posts={posts} />
+      <PostList posts={posts} />
     </main>
   );
 }

@@ -14,6 +14,15 @@ const MIME_TYPES: Record<string, string> = {
   ".svg": "image/svg+xml",
 };
 
+function imageResponse(buffer: Buffer | Uint8Array, contentType: string) {
+  return new NextResponse(new Uint8Array(buffer), {
+    headers: {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
+}
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string; filename: string }> }
@@ -34,45 +43,26 @@ export async function GET(
   const ext = path.extname(filename).toLowerCase();
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
 
-  // SVGs and GIFs: serve as-is (no resizing)
+  // SVGs and GIFs: serve as-is
   if (ext === ".svg" || ext === ".gif") {
-    const buffer = new Uint8Array(fs.readFileSync(originalPath));
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    });
+    return imageResponse(fs.readFileSync(originalPath), contentType);
   }
 
-  // Check if a cached resized version exists
+  // Serve cached resized version if available
   const resizedDir = path.join(imagesDir, ".resized");
   const resizedPath = path.join(resizedDir, filename);
 
   if (fs.existsSync(resizedPath)) {
-    const buffer = new Uint8Array(fs.readFileSync(resizedPath));
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    });
+    return imageResponse(fs.readFileSync(resizedPath), contentType);
   }
 
-  // Check if the original needs resizing
+  // Serve original if small enough
   const metadata = await sharp(originalPath).metadata();
-
   if (!metadata.width || metadata.width <= MAX_WIDTH) {
-    const buffer = new Uint8Array(fs.readFileSync(originalPath));
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
-      },
-    });
+    return imageResponse(fs.readFileSync(originalPath), contentType);
   }
 
-  // Resize and cache
+  // Resize, cache, and serve
   const resized = await sharp(originalPath)
     .resize(MAX_WIDTH, undefined, { withoutEnlargement: true })
     .toBuffer();
@@ -80,10 +70,5 @@ export async function GET(
   fs.mkdirSync(resizedDir, { recursive: true });
   fs.writeFileSync(resizedPath, resized);
 
-  return new NextResponse(new Uint8Array(resized), {
-    headers: {
-      "Content-Type": contentType,
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
-  });
+  return imageResponse(resized, contentType);
 }
