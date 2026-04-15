@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 
 const contentDir = path.join(process.cwd(), "content");
+const pullDatesFile = path.join(contentDir, "pull-dates.json");
+const recommendedFile = path.join(contentDir, "recommended.json");
 
 export interface BlogPost {
   slug: string;
@@ -75,4 +77,150 @@ export function getPostBySlug(slug: string): BlogPostWithContent | undefined {
   if (!fs.existsSync(filePath)) return undefined;
   const raw = fs.readFileSync(filePath, "utf-8");
   return parseContentFile(slug, raw);
+}
+
+export type NoteBlock =
+  | { type: "heading"; text: string }
+  | { type: "paragraph"; text: string };
+
+export interface NoteEntry {
+  slug: string;
+  title: string;
+  date: string;
+  recommended: boolean;
+}
+
+export interface BookEntry extends NoteEntry {
+  blocks: NoteBlock[];
+}
+
+export interface PaperEntry extends NoteEntry {
+  link?: string;
+  blocks: NoteBlock[];
+}
+
+function humanizeSlug(slug: string): string {
+  return slug
+    .replace(/_/g, " ")
+    .split(" ")
+    .map((w) => (/^[a-z]/.test(w) ? w[0].toUpperCase() + w.slice(1) : w))
+    .join(" ");
+}
+
+function parseNote(raw: string): { link?: string; blocks: NoteBlock[] } {
+  const lines = raw.split("\n");
+  let link: string | undefined;
+  let start = 0;
+
+  if (lines[0]?.startsWith("LINK:")) {
+    link = lines[0].slice("LINK:".length).trim();
+    start = 1;
+    while (start < lines.length && lines[start].trim() === "") start++;
+  }
+
+  const blocks: NoteBlock[] = [];
+  let paragraph: string[] = [];
+
+  const flush = () => {
+    if (paragraph.length) {
+      blocks.push({ type: "paragraph", text: paragraph.join(" ").trim() });
+      paragraph = [];
+    }
+  };
+
+  for (let i = start; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.startsWith("# ")) {
+      flush();
+      blocks.push({ type: "heading", text: line.slice(2).trim() });
+    } else if (line.trim() === "") {
+      flush();
+    } else {
+      paragraph.push(line.trim());
+    }
+  }
+  flush();
+
+  return { link, blocks };
+}
+
+function loadPullDates(): Record<string, string> {
+  try {
+    return JSON.parse(fs.readFileSync(pullDatesFile, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function savePullDates(dates: Record<string, string>) {
+  fs.writeFileSync(pullDatesFile, JSON.stringify(dates, null, 2) + "\n");
+}
+
+function loadRecommended(): Set<string> {
+  try {
+    const arr = JSON.parse(fs.readFileSync(recommendedFile, "utf-8"));
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function listNotes(subdir: string): NoteEntry[] {
+  const dir = path.join(contentDir, subdir);
+  if (!fs.existsSync(dir)) return [];
+
+  const dates = loadPullDates();
+  const recommended = loadRecommended();
+  const today = new Date().toISOString().slice(0, 10);
+  let mutated = false;
+
+  const entries = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".md") && f.toLowerCase() !== "readme.md")
+    .map((f) => {
+      const slug = f.replace(/\.md$/, "");
+      const key = `${subdir}/${f}`;
+      if (!dates[key]) {
+        dates[key] = today;
+        mutated = true;
+      }
+      return {
+        slug,
+        title: humanizeSlug(slug),
+        date: dates[key],
+        recommended: recommended.has(key),
+      };
+    });
+
+  if (mutated) savePullDates(dates);
+
+  return entries.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export function getAllBooks(): NoteEntry[] {
+  return listNotes("books");
+}
+
+export function getBookBySlug(slug: string): BookEntry | undefined {
+  const filePath = path.join(contentDir, "books", `${slug}.md`);
+  if (!fs.existsSync(filePath)) return undefined;
+  const { blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
+  const key = `books/${slug}.md`;
+  const date = loadPullDates()[key] ?? "";
+  const recommended = loadRecommended().has(key);
+  return { slug, title: humanizeSlug(slug), date, recommended, blocks };
+}
+
+export function getAllPapers(): NoteEntry[] {
+  return listNotes("papers");
+}
+
+export function getPaperBySlug(slug: string): PaperEntry | undefined {
+  const filePath = path.join(contentDir, "papers", `${slug}.md`);
+  if (!fs.existsSync(filePath)) return undefined;
+  const { link, blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
+  const key = `papers/${slug}.md`;
+  const date = loadPullDates()[key] ?? "";
+  const recommended = loadRecommended().has(key);
+  return { slug, title: humanizeSlug(slug), date, recommended, link, blocks };
 }
