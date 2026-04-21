@@ -224,3 +224,26 @@ export function getPaperBySlug(slug: string): PaperEntry | undefined {
   const recommended = loadRecommended().has(key);
   return { slug, title: humanizeSlug(slug), date, recommended, link, blocks };
 }
+
+export type AboutSegment =
+  | { type: "text"; text: string }
+  | { type: "link"; text: string; href: string };
+
+export function getAboutParagraphs(): AboutSegment[][] {
+  const filePath = path.join(contentDir, "about.md");
+  const raw = fs.readFileSync(filePath, "utf-8");
+  const paragraphs = raw.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  const linkRe = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+  return paragraphs.map((p) => {
+    const segments: AboutSegment[] = [];
+    let last = 0;
+    for (const m of p.matchAll(linkRe)) {
+      if (m.index! > last) segments.push({ type: "text", text: p.slice(last, m.index!) });
+      segments.push({ type: "link", text: m[1], href: m[2] });
+      last = m.index! + m[0].length;
+    }
+    if (last < p.length) segments.push({ type: "text", text: p.slice(last) });
+    return segments;
+  });
+}

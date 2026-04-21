@@ -1,6 +1,9 @@
 import Image from "next/image";
+import { getAboutParagraphs } from "@/lib/data";
 
 export default function About() {
+  const paragraphs = getAboutParagraphs();
+
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center md:items-start">
@@ -19,15 +22,19 @@ export default function About() {
         <div className="w-full md:w-2/3">
           <h1 className="text-4xl font-bold mb-6">About Me</h1>
           <div className="space-y-6 text-lg leading-relaxed">
-            <p>
-              I started this blog to document my curiosity. I like AI and I'm looking forward to the future!
-            </p>
-            <p>
-              I'm based in Sofia, Bulgaria. I like to read books and recently started documenting my thoughts on anything I read
-              <a href="https://github.com/ilia-iliev/booknote"> here</a>. I keep a similar repo regarding
-              <a href="https://github.com/ilia-iliev/papernote"> AI papers</a>.
-              I also like hiking.
-            </p>
+            {paragraphs.map((segments, i) => (
+              <p key={i}>
+                {segments.map((s, j) =>
+                  s.type === "link" ? (
+                    <a key={j} href={s.href}>
+                      {s.text}
+                    </a>
+                  ) : (
+                    <span key={j}>{s.text}</span>
+                  )
+                )}
+              </p>
+            ))}
             <div className="flex gap-4 pt-2">
               <a
                 href="https://github.com/ilia-iliev"
