@@ -6,7 +6,7 @@ export default function Header() {
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         <div className="mb-4 md:mb-0">
           <Link href="/" className="text-2xl font-bold tracking-tighter hover:opacity-75 transition-opacity">
-            My Personal Blog
+            Personal Site
           </Link>
         </div>
         <nav>
