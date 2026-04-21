@@ -23,10 +23,14 @@ export default function About() {
           <h1 className="text-4xl font-bold mb-6">About Me</h1>
           <div className="space-y-6 text-lg leading-relaxed">
             {paragraphs.map((segments, i) => (
-              <p key={i}>
+              <p key={i} className="whitespace-pre-line">
                 {segments.map((s, j) =>
                   s.type === "link" ? (
-                    <a key={j} href={s.href}>
+                    <a
+                      key={j}
+                      href={s.href}
+                      className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+                    >
                       {s.text}
                     </a>
                   ) : (

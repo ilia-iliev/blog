@@ -9,11 +9,11 @@ export default function BooksPage() {
       <section className="mb-10">
         <h1 className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight">Books</h1>
         <p className="text-base text-gray-700 mb-2">
-          Notes on my reading - organized around the four questions from{" "}
-          <em>How to Read a Book</em>. I started maintaining my reading that way around February '26
+          Notes on my reading - organized around tips from{" "}
+          <em>How to Read a Book</em>
         </p>
         <p className="text-sm text-gray-600">
-          Titles in <span className="text-black font-semibold">black</span> are ones I especially recommend.
+          I especiall recommend titles in <span className="text-black font-semibold">black</span>
         </p>
       </section>
 
