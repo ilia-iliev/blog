@@ -1,6 +1,6 @@
 [submodule "content/books"]
 	path = content/books
-	url = git@github.com:ilia-iliev/booknote.git
+	url = https://github.com/ilia-iliev/booknote.git
 [submodule "content/papers"]
 	path = content/papers
-	url = git@github.com:ilia-iliev/papernote.git
+	url = https://github.com/ilia-iliev/papernote.git
