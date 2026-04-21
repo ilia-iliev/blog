@@ -1,3 +1,13 @@
-I started this blog to document my curiosity. I like AI and I'm looking forward to the future!
+I am currently busy coming up with ways to leverage my years of experience in ML and DS into the modern AI era.
 
-I'm based in Sofia, Bulgaria. I like to read books and recently started documenting my thoughts on anything I read [here](https://github.com/ilia-iliev/booknote). I keep a similar repo regarding [AI papers](https://github.com/ilia-iliev/papernote). I also like hiking.
+I'm based in Sofia, Bulgaria. 
+
+
+Some facts about me:
+
+- Currently based on Sofia
+- I lived in Glasgow for 4 years and 1 year in Singapore
+- I hold a Masters in Computer Engineering
+- I have backpacked across several countries in Southeast Asia
+- I completed half a marathon in 1:56
+- I have made some money playing card games - namely [TES:L](https://en.wikipedia.org/wiki/The_Elder_Scrolls:_Legends)
