@@ -37,6 +37,15 @@ export default async function BookPage({ params }: PageProps) {
                 </h2>
               );
             }
+            if (block.type === "list") {
+              return (
+                <ul key={i} className="list-disc pl-6 mb-6 space-y-2 leading-relaxed">
+                  {block.items.map((item, j) => (
+                    <li key={j}>{item}</li>
+                  ))}
+                </ul>
+              );
+            }
             return (
               <p key={i} className="mb-6 leading-relaxed">
                 {block.text}

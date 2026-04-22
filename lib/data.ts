@@ -81,7 +81,8 @@ export function getPostBySlug(slug: string): BlogPostWithContent | undefined {
 
 export type NoteBlock =
   | { type: "heading"; text: string }
-  | { type: "paragraph"; text: string };
+  | { type: "paragraph"; text: string }
+  | { type: "list"; items: string[] };
 
 export interface NoteEntry {
   slug: string;
@@ -120,21 +121,38 @@ function parseNote(raw: string): { link?: string; blocks: NoteBlock[] } {
 
   const blocks: NoteBlock[] = [];
   let paragraph: string[] = [];
+  let listItems: string[] = [];
 
-  const flush = () => {
+  const flushParagraph = () => {
     if (paragraph.length) {
       blocks.push({ type: "paragraph", text: paragraph.join(" ").trim() });
       paragraph = [];
     }
   };
+  const flushList = () => {
+    if (listItems.length) {
+      blocks.push({ type: "list", items: listItems });
+      listItems = [];
+    }
+  };
+  const flush = () => {
+    flushParagraph();
+    flushList();
+  };
 
   for (let i = start; i < lines.length; i++) {
     const line = lines[i];
+    const bullet = line.match(/^\s*-\s+(.*)$/);
     if (line.startsWith("# ")) {
       flush();
       blocks.push({ type: "heading", text: line.slice(2).trim() });
     } else if (line.trim() === "") {
       flush();
+    } else if (bullet) {
+      flushParagraph();
+      listItems.push(bullet[1].trim());
+    } else if (listItems.length) {
+      listItems[listItems.length - 1] += " " + line.trim();
     } else {
       paragraph.push(line.trim());
     }
