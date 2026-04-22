@@ -9,7 +9,7 @@ export default function PapersPage() {
       <section className="mb-10">
         <h1 className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight">Papers</h1>
         <p className="text-base text-gray-700 mb-2">
-          Notes on papers on AI I read, using the four-question structure from book reading.
+          Notes on paper reading, using the same structure from book reading.
         </p>
       </section>
 
