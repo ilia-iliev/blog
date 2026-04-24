@@ -3,12 +3,10 @@ import Link from 'next/link';
 export default function Header() {
   return (
     <header className="w-full py-6 border-b-2 border-[#ddaa88]">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-        <div className="mb-4 md:mb-0">
-          <Link href="/" className="text-2xl font-mono tracking-tighter hover:opacity-75 transition-opacity">
-            ilia@home:$
-          </Link>
-        </div>
+      <div className="w-full px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <Link href="/" className="text-2xl font-mono tracking-tighter hover:opacity-75 transition-opacity">
+          ilia@home:$
+        </Link>
         <nav>
           <ul className="flex text-lg font-medium divide-x divide-black/20">
             <li className="px-4 first:pl-0 last:pr-0">
@@ -22,18 +20,8 @@ export default function Header() {
               </Link>
             </li>
             <li className="px-4 first:pl-0 last:pr-0">
-              <Link href="/books" className="hover:underline underline-offset-4">
-                Book Reading
-              </Link>
-            </li>
-            <li className="px-4 first:pl-0 last:pr-0">
-              <Link href="/papers" className="hover:underline underline-offset-4">
-                Paper Reading
-              </Link>
-            </li>
-            <li className="px-4 first:pl-0 last:pr-0">
-              <Link href="/subscribe" className="hover:underline underline-offset-4">
-                Subscribe
+              <Link href="/reading" className="hover:underline underline-offset-4">
+                Reading
               </Link>
             </li>
           </ul>
