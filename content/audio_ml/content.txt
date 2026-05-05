@@ -1,13 +1,13 @@
-How AI Learns to Hear
+The Rise of Modern Audio AI
 2026-05-05
 
-This is an exploration of how audio is represented in ML/AI models. The post is born out of my curiousity - I am sharing my understanding of how models understand audio, told through the history of notable breakthroughs in the field.
+This is an exploration of how audio is represented in ML/AI models. I am sharing my understanding of how models understand audio, told through the history of notable breakthroughs in the field.
 
 It's always a good idea to start from the ground up. What is audio? This is an example soundwave:
 
 [soundwave.png]
 
-We have an audio signal (represented by the soundwave) and a receiver (a microphone). The receiver captures the analog voltage and digitizes it into samples many times a second - for example 44100 times (44.1 kHz) for CD-quality audio. Put simply, the microphone has a sensitive diaphragm that reacts to changes in air pressure. A snapshot of the diaphragm's position is taken at high frequency. Better mics are more accurate and have a better dynamic range, but the core principle remains. And if we were to plot all the recorded values, we get a reconstruction of the soundwave.
+We have an audio signal and a receiver (a microphone). The receiver captures the analog voltage and digitizes it into samples many times a second - for example 44100 times (44.1 kHz) for CD-quality audio. Put simply, the microphone has a sensitive diaphragm that reacts to changes in air pressure. A snapshot of the diaphragm's position is taken at high frequency. Better mics are more accurate and have a better dynamic range, but the core principle remains. And if we were to plot all the recorded values, we get a reconstruction like the soundwave above.
 
 So, audio files are already just vectors of numbers, which makes them seem ready for modeling. However, audio has properties that can be utilized to lessen the curse of dimensionality. For example, there's no need to equally represent every sound that a mic can pick up - it makes sense to focus on the ranges perceived by the human ear, and especially human speech. 
 
@@ -26,9 +26,9 @@ codeword: the mapped bit of audio, after quantization
 codebook: dictionary of all possible mappings
 
 1. [wav2vec (2019, Meta/Facebook)](https://arxiv.org/abs/1904.05862)
-A notable breakthrough was wav2vec  which directly processed the raw vector. In simple terms, a neural net was trained on a large corpus of recorded speech to predict future values in the signal. The model learned via "contrastive loss" - the goal is to choose the actual next value over sampled distractor values. 
+A notable breakthrough was wav2vec which directly processed the raw vector. In simple terms, a neural net was trained on a large corpus of recorded speech to predict future values in the signal. The model learned via "contrastive loss" - the goal is to choose the actual next value over sampled distractor values. 
 
-The original wav2vec was somewhat difficult to use - it's purely an encoder and requires an additional model to generate output (i.e. transcription). Moreover, using raw audio vectors is wasteful because the space is huge and sparse. It's more meaningful to teach the model to differentiate between "bin" and "pin" than between "bin" and an airplane flying past.
+The original wav2vec was somewhat difficult to use - it's purely an encoder and requires an additional model to generate output (like transcription). Moreover, using raw audio vectors is wasteful because the space is huge and sparse. It's more meaningful to teach the model to differentiate between "bin" and "pin" than between "bin" and an airplane flying past.
 
 2. [wav2vec 2.0 (2020, Meta/Facebook)](https://arxiv.org/abs/2006.11477)
 Arrived with a modernized architecture - a mix of convolution and transformer. It no longer predicts a future value, but rather masks and tries to guess parts of the sequence - similar to how BERT handles text.
@@ -50,14 +50,14 @@ We transformed 2d array containing time and intensity to 3d - time, intensity an
 
 In the post-Whisper period, the "winner" architecture is still an open game. As great as Whisper is, it's not perfect - it makes mistakes and struggles with background noise and has an inherent delay because audio is processed in chunks.
 
-Current LLMs increasingly understand audio natively. This is usually done by plugging in an audio encoder directly into the LLM, expanding its token vocabulary beyond just text (and images). While this works for speech understanding, capturing nuances such as tone, speaker identification or background noise is trickier to solve since there is no direct mapping to text.
+Current LLMs are expanding beyond text and increasingly understand audio. This is usually done by plugging in an audio encoder directly into the LLM, expanding its token vocabulary beyond just text (and images). While this works for speech understanding, capturing nuances such as tone, speaker identification or background noise is trickier to solve since there is no direct mapping to text.
 
 Notable Mention: [Moshi (Kyutai, 2024)](https://arxiv.org/abs/2409.00037) 
 Moshi represents a shift toward true "streaming" audio. They use an audio codec (encoder-decoder) called Mimi for both input and output. Mimi handles both "semantic" (word meaning) and "acoustic" tokens (the sound texture).
 
 [moshi.png]
 
-Unlike traditional LLMs that wait for a sequence to finish before reading input, Moshi's LLM streams both thought and input tokens simultaneously, allowing real-time interruptions. They use Residual Vector Quantization (RVQ) - a method that stacks multiple layers of quantization. Each subsequent layer minimizes the quantization loss of the previous. This codec scheme is now widely used in practice for other models.
+Unlike traditional LLMs that wait for a sequence to finish before reading input, Moshi's LLM streams both thought and input tokens simultaneously, allowing real-time interruptions. They use Residual Vector Quantization (RVQ) - stacking multiple layers of quantization. Each subsequent layer minimizes the quantization loss of the previous. This codec scheme is widely used in practice for other models.
 
-Audio remains unsolved. We have come a long way; speech-to-text and text-to-speech are now taken for granted. However, there is still a gap when modeling audio without involving text.
+Audio remains unsolved. We have come a long way; speech-to-text and text-to-speech are now taken for granted. However, there is still a gap when modeling audio without involving text. So far audio feels like an afterthought and perhaps it is time for more audio-first models.
 
