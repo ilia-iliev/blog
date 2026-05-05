@@ -3,9 +3,6 @@ How AI Learns to Hear
 
 This is an exploration of how audio is represented in ML/AI models. The post is born out of my curiousity - I am sharing my understanding of how models understand audio, told through the history of notable breakthroughs in the field.
 
-
-The Basics
-
 It's always a good idea to start from the ground up. What is audio? This is an example soundwave:
 
 [soundwave.png]
@@ -39,7 +36,6 @@ Arrived with a modernized architecture - a mix of convolution and transformer. I
 The more interesting breakthrough is the quantization of audio. Audio is a much richer signal than text, so the we can't simply constrain our vocabulary using something like BPE, the way text-LLMs are doing. Instead wav2vec 2.0 learns a lossy tokenization method from the training data. However, backpropagation isn't applicable to discrete tokens, so the Gumbel-softmax trick is employed. A random number is pulled from Gumbel distribution and is added to the input, followed by softmax. This makes the math differentiable and the model can explore different codewords.
 
 3. [Whisper (2022, OpenAI)](https://arxiv.org/abs/2212.04356)
-
 It's remarkable how widely Whisper is used even today, in 2026. Still an industry standard, its longevity is a testament to how powerful it is. 
 
 The preprocessing step was completely revamped. Instead of struggling with raw audio values, Whisper simplifies the input space by using log-Mel spectograms, turning audio into an image.
@@ -52,14 +48,11 @@ We transformed 2d array containing time and intensity to 3d - time, intensity an
 
 [whisper_architecture.png]
 
-The Modern Era: LLMs
-
 In the post-Whisper period, the "winner" architecture is still an open game. As great as Whisper is, it's not perfect - it makes mistakes and struggles with background noise and has an inherent delay because audio is processed in chunks.
 
 Current LLMs increasingly understand audio natively. This is usually done by plugging in an audio encoder directly into the LLM, expanding its token vocabulary beyond just text (and images). While this works for speech understanding, capturing nuances such as tone, speaker identification or background noise is trickier to solve since there is no direct mapping to text.
 
 Notable Mention: [Moshi (Kyutai, 2024)](https://arxiv.org/abs/2409.00037) 
-
 Moshi represents a shift toward true "streaming" audio. They use an audio codec (encoder-decoder) called Mimi for both input and output. Mimi handles both "semantic" (word meaning) and "acoustic" tokens (the sound texture).
 
 [moshi.png]
