@@ -1,5 +1,5 @@
 How AI Learns to Hear
-2026-69-69
+2026-05-05
 
 This is an exploration of how audio is represented in ML/AI models. The post is born out of my curiousity - I am sharing my understanding of how models understand audio, told through the history of notable breakthroughs in the field.
 
