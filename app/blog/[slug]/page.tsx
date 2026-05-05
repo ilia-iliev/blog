@@ -6,6 +6,36 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+function renderInline(text: string): React.ReactNode[] {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  while ((match = linkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const [, label, href] = match;
+    const external = /^https?:\/\//.test(href);
+    parts.push(
+      <a
+        key={key++}
+        href={href}
+        className="underline text-blue-600 hover:text-blue-800"
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      >
+        {label}
+      </a>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
 export default async function BlogPost({ params }: PageProps) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
@@ -29,7 +59,7 @@ export default async function BlogPost({ params }: PageProps) {
         <div className="prose prose-lg max-w-none">
           {post.blocks.map((block, i) => {
             if (block.type === "paragraph") {
-              return <p key={i} className="mb-6 leading-relaxed">{block.text}</p>;
+              return <p key={i} className="mb-6 leading-relaxed">{renderInline(block.text)}</p>;
             }
             return (
               <figure key={i} className="my-8 flex flex-col items-center">

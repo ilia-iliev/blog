@@ -16,7 +16,7 @@ So, audio files are already just vectors of numbers, which makes them seem ready
 
 Below is a typical soundwave of the English alphabet. Note that different accents will naturally look different:
 
-[alphabet.jpg] 
+[alphabet.png] 
 
 To model English, the goal is to learn how to differentiate between the soundwaves above. It's trickier than simply recognizing a pattern - there are accents, background noise, multiple speakers... In practice, audio is often a bunch of soundwaves overlaid on top of each other and a good ML model should be able to disentangle them. 
 
@@ -28,17 +28,17 @@ quantization: a "lossy" mapping used when the signal space is too large. Rather 
 codeword: the mapped bit of audio, after quantization
 codebook: dictionary of all possible mappings
 
-1. wav2vec (2019, Meta/Facebook)
+1. [wav2vec (2019, Meta/Facebook)](https://arxiv.org/abs/1904.05862)
 A notable breakthrough was wav2vec  which directly processed the raw vector. In simple terms, a neural net was trained on a large corpus of recorded speech to predict future values in the signal. The model learned via "contrastive loss" - the goal is to choose the actual next value over sampled distractor values. 
 
 The original wav2vec was somewhat difficult to use - it's purely an encoder and requires an additional model to generate output (i.e. transcription). Moreover, using raw audio vectors is wasteful because the space is huge and sparse. It's more meaningful to teach the model to differentiate between "bin" and "pin" than between "bin" and an airplane flying past.
 
-2. wav2vec 2.0 (2020, Meta/Facebook)
+2. [wav2vec 2.0 (2020, Meta/Facebook)](https://arxiv.org/abs/2006.11477)
 Arrived with a modernized architecture - a mix of convolution and transformer. It no longer predicts a future value, but rather masks and tries to guess parts of the sequence - similar to how BERT handles text.
 
 The more interesting breakthrough is the quantization of audio. Audio is a much richer signal than text, so the we can't simply constrain our vocabulary using something like BPE, the way text-LLMs are doing. Instead wav2vec 2.0 learns a lossy tokenization method from the training data. However, backpropagation isn't applicable to discrete tokens, so the Gumbel-softmax trick is employed. A random number is pulled from Gumbel distribution and is added to the input, followed by softmax. This makes the math differentiable and the model can explore different codewords.
 
-3. Whisper (2022, OpenAI)
+3. [Whisper (2022, OpenAI)](https://arxiv.org/abs/2212.04356)
 
 It's remarkable how widely Whisper is used even today, in 2026. Still an industry standard, its longevity is a testament to how powerful it is. 
 
@@ -58,7 +58,7 @@ In the post-Whisper period, the "winner" architecture is still an open game. As 
 
 Current LLMs increasingly understand audio natively. This is usually done by plugging in an audio encoder directly into the LLM, expanding its token vocabulary beyond just text (and images). While this works for speech understanding, capturing nuances such as tone, speaker identification or background noise is trickier to solve since there is no direct mapping to text.
 
-Notable Mention: Moshi (Kyutai, 2024) 
+Notable Mention: [Moshi (Kyutai, 2024)](https://arxiv.org/abs/2409.00037) 
 
 Moshi represents a shift toward true "streaming" audio. They use an audio codec (encoder-decoder) called Mimi for both input and output. Mimi handles both "semantic" (word meaning) and "acoustic" tokens (the sound texture).
 
@@ -68,7 +68,3 @@ Unlike traditional LLMs that wait for a sequence to finish before reading input,
 
 Audio remains unsolved. We have come a long way; speech-to-text and text-to-speech are now taken for granted. However, there is still a gap when modeling audio without involving text.
 
-* [Wav2vec](https://arxiv.org/abs/1904.05862
-* [Wav2vec 2.0](https://arxiv.org/abs/2006.11477)
-* [Whisper](https://arxiv.org/abs/2212.04356)
-* [Mosh](https://arxiv.org/abs/2410.00037)
