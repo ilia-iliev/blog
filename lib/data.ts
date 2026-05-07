@@ -8,7 +8,6 @@ const recommendedFile = path.join(contentDir, "recommended.json");
 export interface BlogPost {
   slug: string;
   title: string;
-  excerpt: string;
   date: string;
 }
 
@@ -25,31 +24,23 @@ function parseContentFile(slug: string, raw: string): BlogPostWithContent {
   const title = lines[0].trim();
   const date = lines[1].trim();
 
-  // Everything after the title and date
   const body = lines.slice(2).join("\n");
-
-  // Split into blocks by blank lines
   const rawBlocks = body.split(/\n\n+/).filter((b) => b.trim());
 
-  const blocks: ContentBlock[] = [];
-  let excerpt = "";
-
-  for (const block of rawBlocks) {
+  const blocks: ContentBlock[] = rawBlocks.map((block) => {
     const trimmed = block.trim();
     const imageMatch = trimmed.match(/^\[([^\]]+)\](?:\(([^)]*)\))?$/);
     if (imageMatch) {
-      blocks.push({
+      return {
         type: "image",
         src: `/api/images/${slug}/${imageMatch[1]}`,
         caption: imageMatch[2] || undefined,
-      });
-    } else {
-      if (!excerpt) excerpt = trimmed;
-      blocks.push({ type: "paragraph", text: trimmed });
+      };
     }
-  }
+    return { type: "paragraph", text: trimmed };
+  });
 
-  return { slug, title, date, excerpt, blocks };
+  return { slug, title, date, blocks };
 }
 
 export function getAllPosts(): BlogPost[] {
@@ -65,8 +56,8 @@ export function getAllPosts(): BlogPost[] {
     const filePath = path.join(contentDir, slug, "content.txt");
     if (!fs.existsSync(filePath)) continue;
     const raw = fs.readFileSync(filePath, "utf-8");
-    const { title, date, excerpt } = parseContentFile(slug, raw);
-    posts.push({ slug, title, date, excerpt });
+    const { title, date } = parseContentFile(slug, raw);
+    posts.push({ slug, title, date });
   }
 
   return posts.sort((a, b) => b.date.localeCompare(a.date));

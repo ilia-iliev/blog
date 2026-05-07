@@ -26,7 +26,7 @@ function renderInline(text: string): React.ReactNode[] {
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
         {label}
-      </a>
+      </a>,
     );
     lastIndex = match.index + match[0].length;
   }
@@ -46,20 +46,22 @@ export default async function BlogPost({ params }: PageProps) {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
-      <Link href="/" className="text-sm text-gray-500 hover:underline mb-8 block">
-        ← Back to Home
-      </Link>
-
       <article>
         <header className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{post.title}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            {post.title}
+          </h1>
           <time className="text-gray-600">{post.date}</time>
         </header>
 
         <div className="prose prose-lg max-w-none">
           {post.blocks.map((block, i) => {
             if (block.type === "paragraph") {
-              return <p key={i} className="mb-6 leading-relaxed">{renderInline(block.text)}</p>;
+              return (
+                <p key={i} className="mb-6 leading-relaxed">
+                  {renderInline(block.text)}
+                </p>
+              );
             }
             return (
               <figure key={i} className="my-8 flex flex-col items-center">
