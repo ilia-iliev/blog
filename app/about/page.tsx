@@ -20,7 +20,6 @@ export default function About() {
         </div>
 
         <div className="w-full md:w-2/3">
-          <h1 className="text-4xl font-bold mb-6">About Me</h1>
           <div className="space-y-6 text-lg leading-relaxed">
             {paragraphs.map((segments, i) => (
               <p key={i} className="whitespace-pre-line">
@@ -35,7 +34,7 @@ export default function About() {
                     </a>
                   ) : (
                     <span key={j}>{s.text}</span>
-                  )
+                  ),
                 )}
               </p>
             ))}
