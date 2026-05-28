@@ -3,7 +3,7 @@ I am currently modernizing my ML experience to the modern AI era.
 About me:
 
 - Currently based in Sofia, Bulgaria
-- Been working in Data Science / Machine Learning since 2018
+- Data Science / Machine Learning since 2018
 - Previously lived in Glasgow and Singapore
 - I hold Masters in Computer Engineering
 - Backpacked across Southeast Asia
