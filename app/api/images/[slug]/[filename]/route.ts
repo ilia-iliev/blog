@@ -72,8 +72,15 @@ export async function GET(
   const original = fs.readFileSync(originalPath);
   const best = resized.length < original.length ? resized : original;
 
-  fs.mkdirSync(resizedDir, { recursive: true });
-  fs.writeFileSync(resizedPath, best);
+  // Best-effort cache. The serverless filesystem (e.g. Vercel) is read-only,
+  // so writing throws there; the CDN caches the response anyway via the
+  // immutable Cache-Control header.
+  try {
+    fs.mkdirSync(resizedDir, { recursive: true });
+    fs.writeFileSync(resizedPath, best);
+  } catch {
+    // Couldn't persist the cache; serving the buffer still works.
+  }
 
   return imageResponse(best, contentType);
 }
