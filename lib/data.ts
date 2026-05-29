@@ -13,6 +13,7 @@ export interface BlogPost {
 
 export type ContentBlock =
   | { type: "paragraph"; text: string }
+  | { type: "list"; items: string[] }
   | { type: "image"; src: string; caption?: string };
 
 export interface BlogPostWithContent extends BlogPost {
@@ -36,6 +37,10 @@ function parseContentFile(slug: string, raw: string): BlogPostWithContent {
         src: `/api/images/${slug}/${imageMatch[1]}`,
         caption: imageMatch[2] || undefined,
       };
+    }
+    const lines = trimmed.split("\n");
+    if (lines.every((line) => line.startsWith("- "))) {
+      return { type: "list", items: lines.map((line) => line.slice(2).trim()) };
     }
     return { type: "paragraph", text: trimmed };
   });

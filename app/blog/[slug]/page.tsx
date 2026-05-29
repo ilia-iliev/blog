@@ -63,6 +63,17 @@ export default async function BlogPost({ params }: PageProps) {
                 </p>
               );
             }
+            if (block.type === "list") {
+              return (
+                <ul key={i} className="mb-6 list-disc pl-6 space-y-2">
+                  {block.items.map((item, j) => (
+                    <li key={j} className="leading-relaxed">
+                      {renderInline(item)}
+                    </li>
+                  ))}
+                </ul>
+              );
+            }
             return (
               <figure key={i} className="my-8 flex flex-col items-center">
                 <img
