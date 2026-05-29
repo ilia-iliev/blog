@@ -62,13 +62,18 @@ export async function GET(
     return imageResponse(fs.readFileSync(originalPath), contentType);
   }
 
-  // Resize, cache, and serve
+  // Resize. Re-encoding can produce a larger file than the original (e.g. an
+  // image barely over MAX_WIDTH), so only use the resized version when it is
+  // actually smaller — otherwise cache and serve the original.
   const resized = await sharp(originalPath)
     .resize(MAX_WIDTH, undefined, { withoutEnlargement: true })
     .toBuffer();
 
-  fs.mkdirSync(resizedDir, { recursive: true });
-  fs.writeFileSync(resizedPath, resized);
+  const original = fs.readFileSync(originalPath);
+  const best = resized.length < original.length ? resized : original;
 
-  return imageResponse(resized, contentType);
+  fs.mkdirSync(resizedDir, { recursive: true });
+  fs.writeFileSync(resizedPath, best);
+
+  return imageResponse(best, contentType);
 }
