@@ -1,4 +1,4 @@
-Engineer. Occasionally I do write ups
+Engineer. Occasionally I do write-ups
 
 About me:
 
