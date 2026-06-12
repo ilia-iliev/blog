@@ -1,4 +1,4 @@
-Read the Room: Social Navigation Game in Gradio
+Read the Room: Building AI Game
 2026-06-12
 
 [fullscreen.png]
