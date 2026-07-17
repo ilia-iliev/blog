@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const contentDir = path.join(process.cwd(), "content");
-const pullDatesFile = path.join(contentDir, "pull-dates.json");
+const notesFile = path.join(contentDir, "notes.json");
 const recommendedFile = path.join(contentDir, "recommended.json");
 
 export interface BlogPost {
@@ -158,16 +158,26 @@ function parseNote(raw: string): { link?: string; blocks: NoteBlock[] } {
   return { link, blocks };
 }
 
-function loadPullDates(): Record<string, string> {
+interface NoteMeta {
+  date: string;
+  title?: string;
+}
+
+function loadNotesMeta(): Record<string, NoteMeta> {
   try {
-    return JSON.parse(fs.readFileSync(pullDatesFile, "utf-8"));
+    return JSON.parse(fs.readFileSync(notesFile, "utf-8"));
   } catch {
     return {};
   }
 }
 
-function savePullDates(dates: Record<string, string>) {
-  fs.writeFileSync(pullDatesFile, JSON.stringify(dates, null, 2) + "\n");
+function saveNotesMeta(meta: Record<string, NoteMeta>) {
+  fs.writeFileSync(notesFile, JSON.stringify(meta, null, 2) + "\n");
+}
+
+function resolveNote(key: string, slug: string): { title: string; date: string } {
+  const meta = loadNotesMeta()[key];
+  return { title: meta?.title ?? humanizeSlug(slug), date: meta?.date ?? "" };
 }
 
 function loadRecommended(): Set<string> {
@@ -183,7 +193,7 @@ function listNotes(subdir: string): NoteEntry[] {
   const dir = path.join(contentDir, subdir);
   if (!fs.existsSync(dir)) return [];
 
-  const dates = loadPullDates();
+  const meta = loadNotesMeta();
   const recommended = loadRecommended();
   const today = new Date().toISOString().slice(0, 10);
   let mutated = false;
@@ -194,19 +204,19 @@ function listNotes(subdir: string): NoteEntry[] {
     .map((f) => {
       const slug = f.replace(/\.md$/, "");
       const key = `${subdir}/${f}`;
-      if (!dates[key]) {
-        dates[key] = today;
+      if (!meta[key]) {
+        meta[key] = { date: today };
         mutated = true;
       }
       return {
         slug,
-        title: humanizeSlug(slug),
-        date: dates[key],
+        title: meta[key].title ?? humanizeSlug(slug),
+        date: meta[key].date,
         recommended: recommended.has(key),
       };
     });
 
-  if (mutated) savePullDates(dates);
+  if (mutated) saveNotesMeta(meta);
 
   return entries.sort((a, b) => b.date.localeCompare(a.date));
 }
@@ -220,9 +230,9 @@ export function getBookBySlug(slug: string): BookEntry | undefined {
   if (!fs.existsSync(filePath)) return undefined;
   const { blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
   const key = `books/${slug}.md`;
-  const date = loadPullDates()[key] ?? "";
+  const { title, date } = resolveNote(key, slug);
   const recommended = loadRecommended().has(key);
-  return { slug, title: humanizeSlug(slug), date, recommended, blocks };
+  return { slug, title, date, recommended, blocks };
 }
 
 export function getAllPapers(): NoteEntry[] {
@@ -234,9 +244,9 @@ export function getPaperBySlug(slug: string): PaperEntry | undefined {
   if (!fs.existsSync(filePath)) return undefined;
   const { link, blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
   const key = `papers/${slug}.md`;
-  const date = loadPullDates()[key] ?? "";
+  const { title, date } = resolveNote(key, slug);
   const recommended = loadRecommended().has(key);
-  return { slug, title: humanizeSlug(slug), date, recommended, link, blocks };
+  return { slug, title, date, recommended, link, blocks };
 }
 
 export type AboutSegment =

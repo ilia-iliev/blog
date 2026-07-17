@@ -1,0 +1,90 @@
+{
+  "books/animal_farm.md": {
+    "date": "2026-03-20"
+  },
+  "books/designing_data_intensive_applications.md": {
+    "date": "2026-01-05"
+  },
+  "books/design_patterns.md": {
+    "date": "2026-04-01"
+  },
+  "books/fountainhead.md": {
+    "date": "2026-04-08"
+  },
+  "books/how_to_read_a_book.md": {
+    "date": "2026-02-22"
+  },
+  "books/my_life_and_work.md": {
+    "date": "2026-01-05"
+  },
+  "books/why_nations_fail.md": {
+    "date": "2026-02-01"
+  },
+  "books/steve_jobs.md": {
+    "date": "2026-05-24",
+    "title": "Steve Jobs (Isaacson)"
+  },
+  "papers/doc2lora.md": {
+    "date": "2026-03-20",
+    "title": "Doc2LoRA"
+  },
+  "papers/DualPath.md": {
+    "date": "2026-04-01"
+  },
+  "papers/engram.md": {
+    "date": "2026-03-20"
+  },
+  "papers/GaLore.md": {
+    "date": "2026-02-16"
+  },
+  "papers/RLM.md": {
+    "date": "2026-02-05"
+  },
+  "papers/STEM.md": {
+    "date": "2026-02-05"
+  },
+  "papers/text2lora.md": {
+    "date": "2026-03-20",
+    "title": "Text2LoRA"
+  },
+  "books/the_art_of_war.md": {
+    "date": "2026-04-21"
+  },
+  "papers/attention_residuals.md": {
+    "date": "2026-04-23"
+  },
+  "papers/TurboQuant.md": {
+    "date": "2026-04-28"
+  },
+  "books/the_pragmatic_programmer.md": {
+    "date": "2025-01-13"
+  },
+  "books/think_and_grow_rich.md": {
+    "date": "2026-05-13"
+  },
+  "papers/speculative_speculative_decoding.md": {
+    "date": "2026-05-13"
+  },
+  "books/the_metamorphosis.md": {
+    "date": "2026-05-29"
+  },
+  "books/escaping_the_build_trap.md": {
+    "date": "2026-06-15"
+  },
+  "books/leonardo_da_vinci.md": {
+    "date": "2026-06-12",
+    "title": "Leonardo Da Vinci (Isaacson)"
+  },
+  "books/system_design_interview_insiders_guide.md": {
+    "date": "2026-06-01",
+    "title": "System Design Interview: An Insider's Guide"
+  },
+  "books/the_silk_roads_a_new_history_of_the_world.md": {
+    "date": "2026-06-27",
+    "title": "The Silk Roads: A New History of the World"
+  },
+  "papers/eagle3.md": {
+    "date": "2026-07-17",
+    "title": "EAGLE-3"
+  }
+}
