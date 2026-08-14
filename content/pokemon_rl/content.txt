@@ -1,0 +1,52 @@
+I signed up for kaggle competition on[Pokémon TCG](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle). This is a blogpost to share my experience.
+
+The competititon rules:
+
+1. The source code is available. This means I can do as many simulations as I can run.
+2. The bot plays a fixed deck. No card changes unless I submit a different bot.
+3. Online ladder where my bots play automatically against other bots - with ELO system
+
+I was late by about a month. But I had still plenty of time to come up with a good solution. So, where is the difficulty here?
+
+1. There are too possible board states - archetypes, cards, board states
+2. Card games are non-deterministic and a good player has to play chance
+3. There are different archetypes and card choices. Self-play vastly overfits
+4. Sometimes a game is just unwinnable
+5. The ladder meta evolves
+6. The decks play very differently from one another
+
+
+
+
+
+# Pokémon TCG AI Battle
+
+A learned policy for Kaggle's  competition.
+
+## Goal and scope
+
+The goal is to perform as well as possible on the Kaggle ladder. A submission is one fixed agent-and-deck pair. Its opponents are other users' submissions, so both the metagame and the cards represented on the ladder can change unpredictably.
+
+We train and compare policies in a local game engine, then use the Kaggle ladder to observe the live metagame. Local evaluation is the decision-making tool: it makes comparisons reproducible and prevents a ladder result from being mistaken for a policy improvement. Ladder performance remains the final objective.
+
+## Approach
+
+The project starts from behavior cloning (BC) on replay data from the deck portfolio. Kaggle publishes top matches daily, making those replays the available source of strong demonstrated play.
+
+Policies are trained as a small portfolio rather than as one universal deck policy. An archetype is a core set of roughly 45 cards; a variant combines that core with flexible choices to make a 60-card deck. Archetypes simplify the space of card choices while preserving the effect of those flexible choices: decks within an archetype play broadly similarly, but variants still matter. Sampling first selects an archetype and then a variant, preserving the representation of each archetype as variants are added.
+
+The actor and critic have separate encoders and heads, but share frozen card embeddings. The board-only critic is fit from repeated continuation outcomes; PPO changes only the actor. Each training target currently averages ten seeded continuations to reduce game randomness.
+
+## Evaluation and promotion
+
+Each variant has a champion and a persistent challenger. At the start of a training round, all available champions are frozen. Challengers collect training games against opponents sampled from that frozen champion set, then are evaluated against the champion for their own variant on identical seeded game roots. The game engine's RNG is fixed by the game-root seed, so an evaluation is reproducible. Candidates are promoted only on measured, reproducible improvements. Results from one candidate cannot change the evaluation conditions for another candidate in the same round.
+
+A **portfolio** is the set of deck variants used for training and evaluation. A **champion** is the best available network for piloting a variant and may be sampled as an opponent for any challenger. A **challenger** is the network being trained for one variant. A challenger whose evaluation is inconclusive is retained for one further training round; challengers with a definite improvement are promoted to champions.
+
+## Current status
+
+PPO ladder training is paused because local policy changes have not produced reliable gains over the BC base.
+
+The latest critic has useful held-out signal (0.285 rollout MSE versus 0.546 for a constant predictor; 0.706 correlation), but this does not establish reliable ranking of nearby actions. Before using it for search, evaluate sibling-action ranking and regret on fresh counterfactual continuations. Start with shallow, policy-guided search and accept only well-calibrated, high-margin overrides.
+
+See [PLAN.md](PLAN.md) for the current training policy and [INDEX.md](INDEX.md) for the engine, repository layout, and local commands.
