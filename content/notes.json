@@ -86,5 +86,14 @@
   "papers/eagle3.md": {
     "date": "2026-07-17",
     "title": "EAGLE-3"
+  },
+  "books/crossing_the_chasm.md": {
+    "date": "2026-07-22"
+  },
+  "books/beginning_of_infinity.md": {
+    "date": "2026-08-12"
+  },
+  "books/working_backwards.md": {
+    "date": "2026-08-09"
   }
 }
