@@ -1,28 +1,36 @@
 {
   "books/animal_farm.md": {
-    "date": "2026-03-20"
+    "date": "2026-03-20",
+    "author": "George Orwell"
   },
   "books/designing_data_intensive_applications.md": {
-    "date": "2026-01-05"
+    "date": "2026-01-05",
+    "author": "Martin Kleppmann"
   },
   "books/design_patterns.md": {
-    "date": "2026-04-01"
+    "date": "2026-04-01",
+    "author": "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides"
   },
   "books/fountainhead.md": {
-    "date": "2026-04-08"
+    "date": "2026-04-08",
+    "author": "Ayn Rand"
   },
   "books/how_to_read_a_book.md": {
-    "date": "2026-02-22"
+    "date": "2026-02-22",
+    "author": "Mortimer J. Adler, Charles Van Doren"
   },
   "books/my_life_and_work.md": {
-    "date": "2026-01-05"
+    "date": "2026-01-05",
+    "author": "Henry Ford, Samuel Crowther"
   },
   "books/why_nations_fail.md": {
-    "date": "2026-02-01"
+    "date": "2026-02-01",
+    "author": "Daron Acemoglu, James A. Robinson"
   },
   "books/steve_jobs.md": {
     "date": "2026-05-24",
-    "title": "Steve Jobs (Isaacson)"
+    "title": "Steve Jobs",
+    "author": "Walter Isaacson"
   },
   "papers/doc2lora.md": {
     "date": "2026-03-20",
@@ -48,7 +56,8 @@
     "title": "Text2LoRA"
   },
   "books/the_art_of_war.md": {
-    "date": "2026-04-21"
+    "date": "2026-04-21",
+    "author": "Sun Tzu"
   },
   "papers/attention_residuals.md": {
     "date": "2026-04-23"
@@ -57,43 +66,53 @@
     "date": "2026-04-28"
   },
   "books/the_pragmatic_programmer.md": {
-    "date": "2025-01-13"
+    "date": "2025-01-13",
+    "author": "Andrew Hunt, David Thomas"
   },
   "books/think_and_grow_rich.md": {
-    "date": "2026-05-13"
+    "date": "2026-05-13",
+    "author": "Napoleon Hill"
   },
   "papers/speculative_speculative_decoding.md": {
     "date": "2026-05-13"
   },
   "books/the_metamorphosis.md": {
-    "date": "2026-05-29"
+    "date": "2026-05-29",
+    "author": "Franz Kafka"
   },
   "books/escaping_the_build_trap.md": {
-    "date": "2026-06-15"
+    "date": "2026-06-15",
+    "author": "Melissa Perri"
   },
   "books/leonardo_da_vinci.md": {
     "date": "2026-06-12",
-    "title": "Leonardo Da Vinci (Isaacson)"
+    "title": "Leonardo Da Vinci",
+    "author": "Walter Isaacson"
   },
   "books/system_design_interview_insiders_guide.md": {
     "date": "2026-06-01",
-    "title": "System Design Interview: An Insider's Guide"
+    "title": "System Design Interview",
+    "author": "Alex Xu"
   },
   "books/the_silk_roads_a_new_history_of_the_world.md": {
     "date": "2026-06-27",
-    "title": "The Silk Roads: A New History of the World"
+    "title": "The Silk Roads",
+    "author": "Peter Frankopan"
   },
   "papers/eagle3.md": {
     "date": "2026-07-17",
     "title": "EAGLE-3"
   },
   "books/crossing_the_chasm.md": {
-    "date": "2026-07-22"
+    "date": "2026-07-22",
+    "author": "Geoffrey A. Moore"
   },
   "books/beginning_of_infinity.md": {
-    "date": "2026-08-12"
+    "date": "2026-08-12",
+    "author": "David Deutsch"
   },
   "books/working_backwards.md": {
-    "date": "2026-08-09"
+    "date": "2026-08-09",
+    "author": "Colin Bryar, Bill Carr"
   }
 }

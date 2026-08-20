@@ -23,6 +23,7 @@ export default async function BookPage({ params }: PageProps) {
       <article>
         <header className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold mb-2 leading-tight">{book.title}</h1>
+          {book.author && <p className="text-lg text-gray-700 mb-1">{book.author}</p>}
           {book.date && (
             <p className="text-sm text-gray-500 tabular-nums">{book.date}</p>
           )}

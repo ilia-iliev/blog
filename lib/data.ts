@@ -83,6 +83,7 @@ export type NoteBlock =
 export interface NoteEntry {
   slug: string;
   title: string;
+  author?: string;
   date: string;
   recommended: boolean;
 }
@@ -161,6 +162,7 @@ function parseNote(raw: string): { link?: string; blocks: NoteBlock[] } {
 interface NoteMeta {
   date: string;
   title?: string;
+  author?: string;
 }
 
 function loadNotesMeta(): Record<string, NoteMeta> {
@@ -175,9 +177,13 @@ function saveNotesMeta(meta: Record<string, NoteMeta>) {
   fs.writeFileSync(notesFile, JSON.stringify(meta, null, 2) + "\n");
 }
 
-function resolveNote(key: string, slug: string): { title: string; date: string } {
+function resolveNote(key: string, slug: string): { title: string; author?: string; date: string } {
   const meta = loadNotesMeta()[key];
-  return { title: meta?.title ?? humanizeSlug(slug), date: meta?.date ?? "" };
+  return {
+    title: meta?.title ?? humanizeSlug(slug),
+    author: meta?.author,
+    date: meta?.date ?? "",
+  };
 }
 
 function loadRecommended(): Set<string> {
@@ -211,6 +217,7 @@ function listNotes(subdir: string): NoteEntry[] {
       return {
         slug,
         title: meta[key].title ?? humanizeSlug(slug),
+        author: meta[key].author,
         date: meta[key].date,
         recommended: recommended.has(key),
       };
@@ -230,9 +237,9 @@ export function getBookBySlug(slug: string): BookEntry | undefined {
   if (!fs.existsSync(filePath)) return undefined;
   const { blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
   const key = `books/${slug}.md`;
-  const { title, date } = resolveNote(key, slug);
+  const { title, author, date } = resolveNote(key, slug);
   const recommended = loadRecommended().has(key);
-  return { slug, title, date, recommended, blocks };
+  return { slug, title, author, date, recommended, blocks };
 }
 
 export function getAllPapers(): NoteEntry[] {
