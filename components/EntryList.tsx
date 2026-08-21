@@ -22,21 +22,25 @@ export default function EntryList({
       {items.map((it) => {
         const muted = it.recommended === false;
         return (
-          <li key={it.slug} className="flex items-baseline justify-between gap-4 whitespace-nowrap">
-            <div>
+          <li key={it.slug} className="flex min-w-0 items-baseline justify-between gap-4">
+            <div className="flex min-w-0 items-baseline gap-2">
               <Link
                 href={`/${basePath}/${it.slug}`}
-                className={`text-lg hover:underline underline-offset-2 ${
+                className={`min-w-0 truncate text-lg hover:underline underline-offset-2 ${
                   bold ? "font-semibold" : ""
                 } ${muted ? "text-gray-500" : "text-black"}`}
               >
                 {it.title}
               </Link>
               {it.author && (
-                <span className="ml-2 text-[15px] text-gray-500">{it.author.split(",")[0]}</span>
+                <span className="shrink-0 text-[15px] text-gray-500 max-[480px]:hidden">
+                  {it.author.split(",")[0]}
+                </span>
               )}
             </div>
-            <span className="text-sm text-gray-500 tabular-nums shrink-0">{it.date}</span>
+            <span className="shrink-0 text-sm text-gray-500 tabular-nums max-sm:hidden">
+              {it.date}
+            </span>
           </li>
         );
       })}

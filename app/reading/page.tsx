@@ -9,8 +9,7 @@ export default function ReadingPage() {
     <main className="container mx-auto px-4 py-12 max-w-3xl">
       <section className="mb-10">
         <p className="text-base text-gray-700 mb-2">
-          Notes on what I read - organized around tips from{" "}
-          <em>How to Read a Book</em>.
+          Reading notes, guided by <em>How to Read a Book</em>.
         </p>
         <p className="text-sm text-gray-600">
           I especially recommend titles in{" "}
