@@ -12,6 +12,7 @@ export interface BlogPost {
 }
 
 export type ContentBlock =
+  | { type: "heading"; text: string }
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }
   | { type: "image"; src: string; caption?: string };
@@ -37,6 +38,10 @@ function parseContentFile(slug: string, raw: string): BlogPostWithContent {
         src: `/api/images/${slug}/${imageMatch[1]}`,
         caption: imageMatch[2] || undefined,
       };
+    }
+    const headingMatch = trimmed.match(/^##\s*(.+)$/);
+    if (headingMatch) {
+      return { type: "heading", text: headingMatch[1].trim() };
     }
     const lines = trimmed.split("\n");
     if (lines.every((line) => line.startsWith("- "))) {

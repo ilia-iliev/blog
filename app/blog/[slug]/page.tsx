@@ -56,6 +56,13 @@ export default async function BlogPost({ params }: PageProps) {
 
         <div className="prose prose-lg max-w-none">
           {post.blocks.map((block, i) => {
+            if (block.type === "heading") {
+              return (
+                <h2 key={i} className="mt-10 mb-4 text-2xl font-bold leading-tight">
+                  {renderInline(block.text)}
+                </h2>
+              );
+            }
             if (block.type === "paragraph") {
               return (
                 <p key={i} className="mb-6 leading-relaxed">

@@ -1,0 +1,117 @@
+Text Classification, the Old-School Way
+2026-08-29
+
+Just about any LLM can do text classification reasonably well. But sometimes there is a need for more. Some problems are narrow, stable, and repeated millions of times. In that setting accuracy, throughput and cost must be measured.
+
+This is an experiment with finetuning on a narrow classification domain - I use paper abstracts taken from arXiv as input and predict the subject areas.
+
+## EDA
+
+The source is the Cornell arXiv snapshot - over 3 million papers. I mapped arXiv's detailed categories into five broad labels. Other categories (mostly math) are excluded. That leaves a bit over 2.6 million usable records:
+
+biology | chemistry | computer science | physics | social sciences
+
+This is a multi-label problem. A paper can be primarily about physics and cross-listed in chemistry. Most papers have one label, but ~143k have two or more. The data is also imbalanced:
+
+[label_distribution.png]
+
+The percentages exceed 100% because of the multiple labels. I opted for macro F1 as the primary metric. Micro F1 is also relevant so I report it, but Macro F1 is harder given what we're working with.
+
+Chemistry presents another problem. Almost half of the samples are secondary labels, often on physics papers. The label reflects how an author chose to submit a paper, not necessarily what can be inferred from the abstract.
+
+Abstracts are relatively short. The median is 144 words and the 95th percentile is 255 words. A 512-token context window seems reasonable.
+
+## Preprocessing
+
+I first ran quick training runs with different preprocessing options on a random 10k sample. Conventional NLP techniques - lowercase, lemmatize, strip stopwords. This regressed the model's performance compared to doing no preprocessing. Upon inspection, I realized that BERT might seem ancient but those transformations are unnecessary.
+
+On abstract length:
+
+[abstract_length.png]
+
+0.5% exceeded the token limit. Upon inspection, I found two things:
+
+- TeX markup
+- Long mathematical expressions
+
+I used a TeX parser to strip commonly observed markup and substituted the long formulas with a dedicated <FORMULA> token.
+
+After normalization:
+- median length fell from 217 to 207 tokens
+- the 95th percentile from 385 to 357
+- the share beyond 512 tokens from 0.49% to 0.03%
+- the normalized sample produced no <UNK> tokens
+
+This was also validated with a small training run - now doing better than the unprocessed baseline. The main takeaway here is that data inspection revealed domain-specific normalization steps.
+
+## Training setup
+
+A head with 5 sigmoid outputs (one per category) is installed on top of the pretrained model. Here's the training split:
+
+[data_split.png]
+
+Validation and holdout retained the natural distribution. Training was sampled to include at least 8,000 positives for each rare label where possible - as the goal was to train for macro F1.
+
+Primary categories received a target of 1.0; secondary received 0.5. The model produces five independent sigmoid probabilities. This soft target acknowledges that a secondary category is useful but weaker evidence.
+
+Four models were fine-tuned:
+
+- bert-base-uncased, 110m parameters, 2018
+- ModernBERT-base, 149m parameters, 2024
+- EmbeddingGemma-300m, 308m parameters, 2025
+- Qwen3-Embedding-0.6B, 600m parameters, 2025
+
+The pipeline is as follows:
+
+- Freeze the base model and train only the head
+- Unfreeze the base model and train it end-to-end
+- Run Optuna hyperparameter search - 16 trials on 5k records over LR, WD, and warmup ratio
+- Retrain with the best hyperparameters on 100k records
+- Evaluate on the holdout
+
+## Results
+
+The process was repeated for all four models. Here are the results:
+
+[training.png]
+
+And here is the improvement over the frozen embeddings. This is noteworthy, as training on frozen embeddings is much faster:
+
+[frozen_probe.png]
+
+And here's the throughput, as measured on my RTX 3090:
+
+[throughput.png]
+
+## LLM Comparison
+
+As a separate experiment, I evaluated LLM that was already running locally: Qwen3.8-27B (fp8). To simplify the task, I used a single-label prompt and reported top-1 accuracy.
+
+[prompt.png]
+
+This setup achieved 92.38% top-1 accuracy, down from 96.24% (finetuned BERT). Inference was quite slow too - ~1h30m. For comparison, the optuna search and finetuning took less than 1 hour total for BERT.
+
+Prompt optimization could improve the key metrics. But the performance is unlikely to improve significantly on my hardware - it's just much slower.
+
+## Resources
+
+The four finetunes are available here:
+
+- [Qwen3-Embedding-0.6B](https://huggingface.co/Ilia-Iliev/arxiv-abstract-classifier-qwen3-embedding-0.6b)
+- [EmbeddingGemma 300M](https://huggingface.co/Ilia-Iliev/arxiv-abstract-classifier-embeddinggemma-300m)
+- [ModernBERT base](https://huggingface.co/Ilia-Iliev/arxiv-abstract-classifier-modernbert-base)
+- [BERT base uncased](https://huggingface.co/Ilia-Iliev/arxiv-abstract-classifier-bert-base-uncased)
+
+The code is available [here](https://github.com/ilia-iliev/abstract_classification). There are instructions on how to run the trained models in the README.
+
+## Conclusion
+
+This experiment showed that sometimes finetuning makes sense. For a narrow, predictable workload, a fine-tuned model achieved:
+
+- better metrics
+- faster inference
+- lower resource usage
+
+The complete experiment took roughly two days of work, including training.
+
+BERT may be from another era, but for bounded problems it proved to be a good baseline.
