@@ -1,4 +1,4 @@
-Text Classification, the Old-School Way
+Old School Text Classification
 2026-08-29
 
 Just about any LLM can do text classification reasonably well. But sometimes there is a need for more. Some problems are narrow, stable, and repeated millions of times. In that setting accuracy, throughput and cost must be measured.
