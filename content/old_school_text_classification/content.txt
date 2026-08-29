@@ -52,7 +52,7 @@ A head with 5 sigmoid outputs (one per category) is installed on top of the pret
 
 Validation and holdout retained the natural distribution. Training was sampled to include at least 8,000 positives for each rare label where possible - as the goal was to train for macro F1.
 
-Primary categories received a target of 1.0; secondary received 0.5. The model produces five independent sigmoid probabilities. This soft target acknowledges that a secondary category is useful but weaker evidence.
+Primary categories received a target of 1.0; secondary received 0.5. The model produces five independent sigmoid probabilities. A secondary category is useful but weaker evidence.
 
 Four models were fine-tuned:
 
@@ -108,7 +108,7 @@ The code is available [here](https://github.com/ilia-iliev/abstract_classificati
 
 This experiment showed that sometimes finetuning makes sense. For a narrow, predictable workload, a fine-tuned model achieved:
 
-- better metrics
+- better top-1 accuracy
 - faster inference
 - lower resource usage
 
