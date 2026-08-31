@@ -13,7 +13,7 @@ biology | chemistry | computer science | physics | social sciences
 
 This is a multi-label problem. A paper can be primarily about physics and cross-listed in chemistry. Most papers have one label, but ~143k have two or more. The data is also imbalanced:
 
-[label_distribution.png]
+![](label_distribution.png)
 
 The percentages exceed 100% because of the multiple labels. I opted for macro F1 as the primary metric. Micro F1 is also relevant so I report it, but Macro F1 is harder given what we're working with.
 
@@ -27,7 +27,7 @@ I first ran quick training runs with different preprocessing options on a random
 
 On abstract length:
 
-[abstract_length.png]
+![](abstract_length.png)
 
 0.5% exceeded the token limit. Upon inspection, I found two things:
 
@@ -48,7 +48,7 @@ This was also validated with a small training run - now doing better than the un
 
 A head with 5 sigmoid outputs (one per category) is installed on top of the pretrained model. Here's the training split:
 
-[data_split.png]
+![](data_split.png)
 
 Validation and holdout retained the natural distribution. Training was sampled to include at least 8,000 positives for each rare label where possible - as the goal was to train for macro F1.
 
@@ -73,21 +73,21 @@ The pipeline is as follows:
 
 The process was repeated for all four models. Here are the results:
 
-[training.png]
+![](training.png)
 
 And here is the improvement over the frozen embeddings. This is noteworthy, as training on frozen embeddings is much faster:
 
-[frozen_probe.png]
+![](frozen_probe.png)
 
 And here's the throughput, as measured on my RTX 3090:
 
-[throughput.png]
+![](throughput.png)
 
 ## LLM Comparison
 
 As a separate experiment, I evaluated LLM that was already running locally: Qwen3.8-27B (fp8). To simplify the task, I used a single-label prompt and reported top-1 accuracy.
 
-[prompt.png]
+![](prompt.png)
 
 This setup achieved 92.38% top-1 accuracy, down from 96.24% (finetuned BERT). Inference was quite slow too - ~1h30m. For comparison, the optuna search and finetuning took less than 1 hour total for BERT.
 
