@@ -11,79 +11,40 @@ export interface BlogPost {
   date: string;
 }
 
-export type ContentBlock =
-  | { type: "heading"; text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "list"; items: string[] }
-  | { type: "image"; src: string; caption?: string };
-
 export interface BlogPostWithContent extends BlogPost {
-  blocks: ContentBlock[];
+  content: string;
 }
 
-function parseContentFile(slug: string, raw: string): BlogPostWithContent {
+function parsePost(raw: string): Omit<BlogPostWithContent, "slug"> {
   const lines = raw.split("\n");
-  const title = lines[0].trim();
-  const date = lines[1].trim();
-
-  const body = lines.slice(2).join("\n");
-  const rawBlocks = body.split(/\n\n+/).filter((b) => b.trim());
-
-  const blocks: ContentBlock[] = rawBlocks.map((block) => {
-    const trimmed = block.trim();
-    const imageMatch = trimmed.match(/^\[([^\]]+)\](?:\(([^)]*)\))?$/);
-    if (imageMatch) {
-      return {
-        type: "image",
-        src: `/api/images/${slug}/${imageMatch[1]}`,
-        caption: imageMatch[2] || undefined,
-      };
-    }
-    const headingMatch = trimmed.match(/^##\s*(.+)$/);
-    if (headingMatch) {
-      return { type: "heading", text: headingMatch[1].trim() };
-    }
-    const lines = trimmed.split("\n");
-    if (lines.every((line) => line.startsWith("- "))) {
-      return { type: "list", items: lines.map((line) => line.slice(2).trim()) };
-    }
-    return { type: "paragraph", text: trimmed };
-  });
-
-  return { slug, title, date, blocks };
+  return {
+    title: lines[0].trim(),
+    date: lines[1].trim(),
+    content: lines.slice(2).join("\n").trim(),
+  };
 }
 
 export function getAllPosts(): BlogPost[] {
   if (!fs.existsSync(contentDir)) return [];
 
-  const slugs = fs
+  const posts = fs
     .readdirSync(contentDir, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
-
-  const posts: BlogPost[] = [];
-  for (const slug of slugs) {
-    const filePath = path.join(contentDir, slug, "content.txt");
-    if (!fs.existsSync(filePath)) continue;
-    const raw = fs.readFileSync(filePath, "utf-8");
-    const { title, date } = parseContentFile(slug, raw);
-    posts.push({ slug, title, date });
-  }
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => {
+      const filePath = path.join(contentDir, entry.name, "content.md");
+      if (!fs.existsSync(filePath)) return [];
+      const { title, date } = parsePost(fs.readFileSync(filePath, "utf-8"));
+      return [{ slug: entry.name, title, date }];
+    });
 
   return posts.sort((a, b) => b.date.localeCompare(a.date));
 }
 
 export function getPostBySlug(slug: string): BlogPostWithContent | undefined {
-  const filePath = path.join(contentDir, slug, "content.txt");
+  const filePath = path.join(contentDir, slug, "content.md");
   if (!fs.existsSync(filePath)) return undefined;
-  const raw = fs.readFileSync(filePath, "utf-8");
-  return parseContentFile(slug, raw);
+  return { slug, ...parsePost(fs.readFileSync(filePath, "utf-8")) };
 }
-
-export type NoteBlock =
-  | { type: "heading"; text: string }
-  | { type: "paragraph"; text: string }
-  | { type: "list"; items: string[] };
 
 export interface NoteEntry {
   slug: string;
@@ -94,74 +55,34 @@ export interface NoteEntry {
 }
 
 export interface BookEntry extends NoteEntry {
-  blocks: NoteBlock[];
+  content: string;
 }
 
 export interface PaperEntry extends NoteEntry {
   link?: string;
-  blocks: NoteBlock[];
+  content: string;
 }
 
 function humanizeSlug(slug: string): string {
   return slug
     .replace(/_/g, " ")
     .split(" ")
-    .map((w) => (/^[a-z]/.test(w) ? w[0].toUpperCase() + w.slice(1) : w))
+    .map((word) => (/^[a-z]/.test(word) ? word[0].toUpperCase() + word.slice(1) : word))
     .join(" ");
 }
 
-function parseNote(raw: string): { link?: string; blocks: NoteBlock[] } {
+function parseNote(raw: string): { link?: string; content: string } {
   const lines = raw.split("\n");
-  let link: string | undefined;
   let start = 0;
+  let link: string | undefined;
 
   if (lines[0]?.startsWith("LINK:")) {
     link = lines[0].slice("LINK:".length).trim();
     start = 1;
-    while (start < lines.length && lines[start].trim() === "") start++;
+    while (lines[start]?.trim() === "") start++;
   }
 
-  const blocks: NoteBlock[] = [];
-  let paragraph: string[] = [];
-  let listItems: string[] = [];
-
-  const flushParagraph = () => {
-    if (paragraph.length) {
-      blocks.push({ type: "paragraph", text: paragraph.join(" ").trim() });
-      paragraph = [];
-    }
-  };
-  const flushList = () => {
-    if (listItems.length) {
-      blocks.push({ type: "list", items: listItems });
-      listItems = [];
-    }
-  };
-  const flush = () => {
-    flushParagraph();
-    flushList();
-  };
-
-  for (let i = start; i < lines.length; i++) {
-    const line = lines[i];
-    const bullet = line.match(/^\s*-\s+(.*)$/);
-    if (line.startsWith("# ")) {
-      flush();
-      blocks.push({ type: "heading", text: line.slice(2).trim() });
-    } else if (line.trim() === "") {
-      flush();
-    } else if (bullet) {
-      flushParagraph();
-      listItems.push(bullet[1].trim());
-    } else if (listItems.length) {
-      listItems[listItems.length - 1] += " " + line.trim();
-    } else {
-      paragraph.push(line.trim());
-    }
-  }
-  flush();
-
-  return { link, blocks };
+  return { link, content: lines.slice(start).join("\n").trim() };
 }
 
 interface NoteMeta {
@@ -182,19 +103,10 @@ function saveNotesMeta(meta: Record<string, NoteMeta>) {
   fs.writeFileSync(notesFile, JSON.stringify(meta, null, 2) + "\n");
 }
 
-function resolveNote(key: string, slug: string): { title: string; author?: string; date: string } {
-  const meta = loadNotesMeta()[key];
-  return {
-    title: meta?.title ?? humanizeSlug(slug),
-    author: meta?.author,
-    date: meta?.date ?? "",
-  };
-}
-
 function loadRecommended(): Set<string> {
   try {
-    const arr = JSON.parse(fs.readFileSync(recommendedFile, "utf-8"));
-    return new Set(Array.isArray(arr) ? arr : []);
+    const entries = JSON.parse(fs.readFileSync(recommendedFile, "utf-8"));
+    return new Set(Array.isArray(entries) ? entries : []);
   } catch {
     return new Set();
   }
@@ -211,10 +123,10 @@ function listNotes(subdir: string): NoteEntry[] {
 
   const entries = fs
     .readdirSync(dir)
-    .filter((f) => f.endsWith(".md") && f.toLowerCase() !== "readme.md")
-    .map((f) => {
-      const slug = f.replace(/\.md$/, "");
-      const key = `${subdir}/${f}`;
+    .filter((file) => file.endsWith(".md") && file.toLowerCase() !== "readme.md")
+    .map((file) => {
+      const slug = file.replace(/\.md$/, "");
+      const key = `${subdir}/${file}`;
       if (!meta[key]) {
         meta[key] = { date: today };
         mutated = true;
@@ -229,8 +141,23 @@ function listNotes(subdir: string): NoteEntry[] {
     });
 
   if (mutated) saveNotesMeta(meta);
-
   return entries.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function getNote(slug: string, subdir: "books" | "papers") {
+  const filePath = path.join(contentDir, subdir, `${slug}.md`);
+  if (!fs.existsSync(filePath)) return undefined;
+
+  const key = `${subdir}/${slug}.md`;
+  const meta = loadNotesMeta()[key];
+  return {
+    slug,
+    title: meta?.title ?? humanizeSlug(slug),
+    author: meta?.author,
+    date: meta?.date ?? "",
+    recommended: loadRecommended().has(key),
+    ...parseNote(fs.readFileSync(filePath, "utf-8")),
+  };
 }
 
 export function getAllBooks(): NoteEntry[] {
@@ -238,13 +165,7 @@ export function getAllBooks(): NoteEntry[] {
 }
 
 export function getBookBySlug(slug: string): BookEntry | undefined {
-  const filePath = path.join(contentDir, "books", `${slug}.md`);
-  if (!fs.existsSync(filePath)) return undefined;
-  const { blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
-  const key = `books/${slug}.md`;
-  const { title, author, date } = resolveNote(key, slug);
-  const recommended = loadRecommended().has(key);
-  return { slug, title, author, date, recommended, blocks };
+  return getNote(slug, "books");
 }
 
 export function getAllPapers(): NoteEntry[] {
@@ -252,13 +173,7 @@ export function getAllPapers(): NoteEntry[] {
 }
 
 export function getPaperBySlug(slug: string): PaperEntry | undefined {
-  const filePath = path.join(contentDir, "papers", `${slug}.md`);
-  if (!fs.existsSync(filePath)) return undefined;
-  const { link, blocks } = parseNote(fs.readFileSync(filePath, "utf-8"));
-  const key = `papers/${slug}.md`;
-  const { title, date } = resolveNote(key, slug);
-  const recommended = loadRecommended().has(key);
-  return { slug, title, date, recommended, link, blocks };
+  return getNote(slug, "papers");
 }
 
 export type AboutSegment =
@@ -268,18 +183,18 @@ export type AboutSegment =
 export function getAboutParagraphs(): AboutSegment[][] {
   const filePath = path.join(contentDir, "about.md");
   const raw = fs.readFileSync(filePath, "utf-8");
-  const paragraphs = raw.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  const paragraphs = raw.split(/\n\n+/).map((paragraph) => paragraph.trim()).filter(Boolean);
   const linkRe = /\[([^\]]+)\]\(([^)]+)\)/g;
 
-  return paragraphs.map((p) => {
+  return paragraphs.map((paragraph) => {
     const segments: AboutSegment[] = [];
     let last = 0;
-    for (const m of p.matchAll(linkRe)) {
-      if (m.index! > last) segments.push({ type: "text", text: p.slice(last, m.index!) });
-      segments.push({ type: "link", text: m[1], href: m[2] });
-      last = m.index! + m[0].length;
+    for (const match of paragraph.matchAll(linkRe)) {
+      if (match.index! > last) segments.push({ type: "text", text: paragraph.slice(last, match.index!) });
+      segments.push({ type: "link", text: match[1], href: match[2] });
+      last = match.index! + match[0].length;
     }
-    if (last < p.length) segments.push({ type: "text", text: p.slice(last) });
+    if (last < paragraph.length) segments.push({ type: "text", text: paragraph.slice(last) });
     return segments;
   });
 }

@@ -5,7 +5,7 @@ This is an exploration of how audio is represented in ML/AI models. I am sharing
 
 It's always a good idea to start from the ground up. What is audio? This is an example soundwave:
 
-[soundwave.png]
+![](soundwave.png)
 
 We have an audio signal and a receiver (a microphone). The receiver captures the analog voltage and digitizes it into samples many times a second - for example 44100 times (44.1 kHz) for CD-quality audio. Put simply, the microphone has a sensitive diaphragm that reacts to changes in air pressure. A snapshot of the diaphragm's position is taken at high frequency. Better mics are more accurate and have a better dynamic range, but the core principle remains. And if we were to plot all the recorded values, we get a reconstruction like the soundwave above.
 
@@ -13,7 +13,7 @@ So, audio files are already just vectors of numbers, which makes them seem ready
 
 Below is a typical soundwave of the English alphabet. Note that different accents will naturally look different:
 
-[alphabet.png]
+![](alphabet.png)
 
 To model English, the goal is to learn how to differentiate between the soundwaves above. It's trickier than simply recognizing a pattern - there are accents, background noise, multiple speakers... In practice, audio is often a bunch of soundwaves overlaid on top of each other and a good ML model should be able to disentangle them.
 
@@ -40,13 +40,13 @@ It's remarkable how widely Whisper is used even today, in 2026. Still an industr
 
 The preprocessing step was completely revamped. Instead of struggling with raw audio values, Whisper simplifies the input space by using log-Mel spectograms, turning audio into an image.
 
-[log_mel_spectogram.png]
+![](log_mel_spectogram.png)
 
 The x-axis is time and the y-axis is frequency, in log-Mel scale. The pixel intensity is the amplitude at that frequency-time point. Sound has the inherent property to repeat, and Fourier Transform can extract these frequencies. The mel scale is a model of how the human ear hears frequencies; more space on the diagram is attributed to the human-speech frequencies.
 
 We transformed 2d array containing time and intensity to 3d - time, intensity and frequency. We didn't add anything new - we just rearranged the original vector, a.k.a feature engineering. A sliding window of such spectograms is the input to Whisper. With the added benefit of unprecedented scale and variety of audio used and transformer encoder-decoder architecture - the results were groundbreaking at the time.
 
-[whisper_architecture.png]
+![](whisper_architecture.png)
 
 In the post-Whisper period, the "winner" architecture is still an open game. As great as Whisper is, it's not perfect - it makes mistakes and struggles with background noise and has an inherent delay because audio is processed in chunks.
 
@@ -55,7 +55,7 @@ Current LLMs are expanding beyond text and increasingly understand audio. This i
 Notable Mention: [Moshi (Kyutai, 2024)](https://arxiv.org/abs/2409.00037)
 Moshi represents a shift toward true "streaming" audio. They use an audio codec (encoder-decoder) called Mimi for both input and output. Mimi handles both "semantic" (word meaning) and "acoustic" tokens (the sound texture).
 
-[moshi.png]
+![](moshi.png)
 
 Unlike traditional LLMs that wait for a sequence to finish before reading input, Moshi's LLM streams both thought and input tokens simultaneously, allowing real-time interruptions. They use Residual Vector Quantization (RVQ) - stacking multiple layers of quantization. Each subsequent layer minimizes the quantization loss of the previous. This codec scheme is widely used in practice for other models.
 

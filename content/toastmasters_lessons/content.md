@@ -5,7 +5,7 @@ I consider myself an engineer and public speaking is not my strongest suit. An e
 
 What is Toastmasters? It's a community that meets up to practice and improve public speaking skills. To me, meetups felt like a safe place to experiment and find what works and what doesn't. It's self-driven - course material is provided but optional and it's up to the individual how much effort they want to put in.
 
-[speak_and_lead.jpg]
+![](speak_and_lead.jpg)
 
 There is an emphasis on evaluation; meaning I will receive feedback - or I will be expected to provide it. That's the best part - public speaking can be intimidating and I am used to avoiding it whenever I can. When I don't have a choice, I would get a pat on the back. Even when I know for a fact that I did terrible, people would still congratulate me for the effort. Which is a great way to show support but a terrible way to learn. And that's why Toastmasters is great.
 
@@ -13,7 +13,7 @@ Giving feedback is always easier than implementing it. I found that people often
 
 On receiving feedback - the better I do, the more I get. Actionable feedback requires people to pay attention to what I say and how I say it. And that's the main goal - to deliver a presentation and have people listen. The worst presentations get the least feedback - the audience would absent-mindedly give general, cookie-cutter tips. So having feedback is a good sign. However, not all feedback is equal - some is good, some not-so-good. Having several people pointing out the same flaw in my presentation is a positive sign that they are right. A one-off comment is more difficult to figure out - it can be a golden piece of advice, a matter of preference or flat-out wrong.
 
-[me_presenting.png]
+![](me_presenting.png)
 
 There are basically two forms of speaking - improv (no prep) and prepared speeches. I wanted to get better at both, and I did have an opportunity to practice. It became painfully obvious that I'm terrible at improvising. At almost every session I attempted improv and every time I felt like my mind was blank. Maybe this format is not the best way to pick up the skill or maybe it's something that one is either born with or not. Nevertheless, the speaking I came up with on the spot always felt dull and uninspiring and I didn't find myself progressing much. However, it's fun and I'd always recommend doing it.
 
@@ -23,7 +23,7 @@ My top lesson is to invoke emotions. It truly is the best way to make my speech 
 
 I experimented with using AI when preparing a speech. The results were promising, though with some caution. The AI is pretty bad at generating a speech for me - the result is overly verbose and not my style. After all, I'd be the one delivering the speech - and it being my style is absolutely essential. However, AI is a great critic. I'd write out a rough draft of what I want to say, then paste it into a prompt and ask for advice. There are always good ideas - like suggestions on particular gestures to include.
 
-[draft_prompt.png]
+![](draft_prompt.png)
 
 Some personal findings:
 

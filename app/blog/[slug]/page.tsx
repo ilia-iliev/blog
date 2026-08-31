@@ -1,101 +1,26 @@
+import Markdown from "@/components/Markdown";
 import { getPostBySlug } from "@/lib/data";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-}
-
-function renderInline(text: string): React.ReactNode[] {
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  let key = 0;
-  while ((match = linkRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
-    }
-    const [, label, href] = match;
-    const external = /^https?:\/\//.test(href);
-    parts.push(
-      <a
-        key={key++}
-        href={href}
-        className="underline text-blue-600 hover:text-blue-800"
-        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      >
-        {label}
-      </a>,
-    );
-    lastIndex = match.index + match[0].length;
-  }
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-  return parts;
 }
 
 export default async function BlogPost({ params }: PageProps) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
 
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
       <article>
         <header className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-            {post.title}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{post.title}</h1>
           <time className="text-gray-600">{post.date}</time>
         </header>
-
-        <div className="prose prose-lg max-w-none">
-          {post.blocks.map((block, i) => {
-            if (block.type === "heading") {
-              return (
-                <h2 key={i} className="mt-10 mb-4 text-2xl font-bold leading-tight">
-                  {renderInline(block.text)}
-                </h2>
-              );
-            }
-            if (block.type === "paragraph") {
-              return (
-                <p key={i} className="mb-6 leading-relaxed">
-                  {renderInline(block.text)}
-                </p>
-              );
-            }
-            if (block.type === "list") {
-              return (
-                <ul key={i} className="mb-6 list-disc pl-6 space-y-2">
-                  {block.items.map((item, j) => (
-                    <li key={j} className="leading-relaxed">
-                      {renderInline(item)}
-                    </li>
-                  ))}
-                </ul>
-              );
-            }
-            return (
-              <figure key={i} className="my-8 flex flex-col items-center">
-                <img
-                  src={block.src}
-                  alt={block.caption || ""}
-                  className="max-w-full h-auto rounded-lg"
-                />
-                {block.caption && (
-                  <figcaption className="text-sm text-gray-500 mt-2 text-center">
-                    {block.caption}
-                  </figcaption>
-                )}
-              </figure>
-            );
-          })}
+        <div className="text-lg max-w-none">
+          <Markdown content={post.content} imageBasePath={`/api/images/${post.slug}`} />
         </div>
       </article>
     </main>

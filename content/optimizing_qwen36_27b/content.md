@@ -13,13 +13,13 @@ Terminal/coding tasks is what I care about, so opted for terminal-bench. It's an
 
 My first instinct was that tasks would rigidly  either pass or fail across retries - with a couple of exceptions. If true, this would greatly simplify the test. I used Unsloth's Q8_K_XL quant on llama.cpp and the result were far messier than I expected:
 
-[pass_at_n.png]
+![](pass_at_n.png)
 
 It took ~46hours of my GPUs producing noise and heat at work to produce the table above. Obviously not ideal and a bottleneck for meaningful benchmarking that way. However, a lot of those tasks were timeouts - so I can now ignore the 30 tasks that failed in all 3 runs and pretend they would never complete. This isn't strictly true but I can run more experiments.
 
 I ran the remaining 50 tasks with pass@3 on vLLM using cyankiwi's AWQ-INT4-BF16 quant - (INT4 for weights, native BF16 for attention). I tested twice - once with FP8 and once with FP16 for KV cache. Interestingly, the theoretically more powerful FP16 cache failed 5 tasks while FP8 did a clean sweep. I raised my eyebrows and ran the FP8 test again - this time it failed 4:
 
-[FP16_vs_FP8.png]
+![](FP16_vs_FP8.png)
 
 Looks like I was measuring noise, not real degradation. Two quick conjectures:
 
@@ -28,7 +28,7 @@ Looks like I was measuring noise, not real degradation. Two quick conjectures:
 
 The obvious solution is to do something larger, like pass@10. To get a clearer signal - I picked 8 tasks that flipped across my tests - meaning they both "passed" and "failed" across attempts. Focus the signal where it matters - ignoring "easy" tasks that always pass or "hard" tasks that always fail. Here is what happened:
 
-[comparison.png]
+![](comparison.png)
 
 A couple of comments here. Once again, on the KV cache - FP16 is doing worse than FP8. At first I thought this could be due to higher timeout rate - as terminal-bench has a timeout (my budget was 45 minutes/task). FP16 is slower decode, so more timeouts are to be expected. However, I was disproven - 19 timeouts for FP16 and 18 for FP8. Possible conclusions:
 
@@ -40,7 +40,7 @@ I'd lean towards option #2 as #1 is a wild claim. Option #3 is also likely
 
 Now, onto the easier metric - speed. Prefill, decode, VRAM, MTP on/off:
 
-[speed.png]
+![](speed.png)
 
 And now it's time for lessons:
 

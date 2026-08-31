@@ -1,7 +1,7 @@
 Read the Room: Building AI Game
 2026-06-12
 
-[fullscreen.png]
+![](fullscreen.png)
 
 I built [Read the Room](https://huggingface.co/spaces/build-small-hackathon/read_the_room) for the Gradio/Hugging Face "Build Small" hackathon. You're a player in a situation where each character has an agenda and an opinion of everyone else, including you. You talk your way to a goal. The inspiration is text adventures RPGs like Zork crossed with social deduction games like Avalon and Werewolf. The social dynamic is the game - I've always wished scripted dialogues weren't as scripted and I wish I could make smart choices. Current AI games mostly dodge this: one character, or fixed characters on rails. So I experimented with multiple AIs reacting to each other and especially a player.
 
@@ -20,7 +20,7 @@ So I spend most of my time fixing that. My solution was to separate concerns - c
 
 Early on the finale and the situation driver was a single call - but that either didn't create enough friction or would make the game go forever.
 
-[turn_diagram.png]
+![](turn_diagram.png)
 
 Each turn, only a few of the characters speak - there is no need to overwhelm the player with text. I know it's a text-based game but no one wants to feel like they are being deluged with info. The question is - which characters should speak then? I tried an explicit character selection LLM call but it felt like it was making too obvious choices - so I made the character selection semi-random - as a way to introduce more friction.
 
@@ -42,7 +42,7 @@ I iterated locally on llama.cpp and Qwen3.6-27B. Used Modal to release on Gemma4
 
 The UI is the part I would have liked to spend more time on - if only it didn't take me forever due to my lack of UI/UX experience. The two choices I'll defend: no visible friendship meters anywhere, and an end screen that finally opens the disposition matrix — how every mind ended. During the game, you only see dialogue.
 
-[end_screen.png]
+![](end_screen.png)
 
 There are two built-in scenarios - I found them to work better than others. For example, I experimented with High School Reunion that kind of worked and Shark Tank that didn't - the latter required making up facts and metrics. However, I focused on the engine, so adding scenarios should work for anyone who wants to try - I'm certain that more creative scenarios exist, it's just a matter of playing with it.
 
