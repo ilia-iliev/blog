@@ -20,7 +20,14 @@ export default async function BlogPost({ params }: PageProps) {
           <time className="text-gray-600">{post.date}</time>
         </header>
         <div className="text-lg max-w-none">
-          <Markdown content={post.content} imageBasePath={`/api/images/${post.slug}`} />
+          <Markdown
+            content={post.content}
+            imageBasePath={
+              process.env.NODE_ENV === "production"
+                ? `/blog-images/${post.slug}`
+                : `/api/images/${post.slug}`
+            }
+          />
         </div>
       </article>
     </main>
