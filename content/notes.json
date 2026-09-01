@@ -114,5 +114,9 @@
   "books/working_backwards.md": {
     "date": "2026-08-09",
     "author": "Colin Bryar, Bill Carr"
+  },
+  "books/the_mom_test.md": {
+    "date": "2026-08-30",
+    "author": "Rob Fitzpatrick"
   }
 }
