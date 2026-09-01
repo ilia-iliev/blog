@@ -3,40 +3,34 @@ Read the Room: Building AI Game
 
 ![](fullscreen.png)
 
-I built [Read the Room](https://huggingface.co/spaces/build-small-hackathon/read_the_room) for the Gradio/Hugging Face "Build Small" hackathon. You're a player in a situation where each character has an agenda and an opinion of everyone else, including you. You talk your way to a goal. The inspiration is text adventures RPGs like Zork crossed with social deduction games like Avalon and Werewolf. The social dynamic is the game - I've always wished scripted dialogues weren't as scripted and I wish I could make smart choices. Current AI games mostly dodge this: one character, or fixed characters on rails. So I experimented with multiple AIs reacting to each other and especially a player.
+I built [Read the Room](https://huggingface.co/spaces/build-small-hackathon/read_the_room) for the Gradio "Build Small" hackathon. 
 
-This post is about what it took to make that work.
+The main idea is that it's social dynamic puzzle - with multiple characters. You talk your way to a goal. The inspiration is text adventures RPGs like Zork crossed with social deduction games like Avalon and Werewolf. I've always wished game dialogues weren't as scripted and dialogue was more open-ended. 
 
-I started by one-shotting the problem - feeding the description above with some additional technical requirements into Claude Code/Codex. With some back-and-forth prompts it worked - you could talk to the characters and they would react. But it was not fun. It was general AI experience - the social situations felt uninspired, the conversation felt like AI slop. The characters all pointed in the same direction and there was no conflict. My choices as a player didn't seem to matter all that much.
+Current AI roleplaying mostly dodge or fail at multiple characters. I experimented with multiple AIs reacting to each other.
 
-After looking at the traces, I realized the issue - the game felt general because all the characters were general - doing too much and there was no clear separation of concerns. For example, a character would say a line and then decide how this line affects the others. It doesn't work like that in the real world - you say something dumb, others decide for themselves.
+I started by one-shotting the problem - feeding a description with some technical requirements into Claude Code. The app is pretty simple - and you could talk to the characters and they would react. But it was not fun. It was general AI experience - the social situations felt uninspired, the conversation felt like AI slop. The characters all pointed in the same direction and there was no conflict. My choices as a player didn't seem to matter all that much.
 
-So I spend most of my time fixing that. My solution was to separate concerns - coming up with who does what and enforcing it through DSPy signatures. Every model call is a typed contract that can only produce its own narrow output:
+After looking at the traces, I realized the issue - the game felt general because all the characters were general - doing too much and there was no clear separation of concerns. For example, a character would say a line and then decide how this line affects the others. It doesn't work like that in the real world - you say something dumb, others decide for themselves. Each characters needed an own character card and context.
 
-- Characters are reactors. They see what happened, think, say a line, update their opinions. They don't act
-- The referee is the sole judge. Once per turn it rules won, lost, or ongoing. It never narrates.
-- The situation driver moves the scene forward - basically adds action to what the characters are thinking
-- The finale narrates the ending — and only renders the verdict the referee already settled.
+Here's the architecture that I ended up with:
 
-Early on the finale and the situation driver was a single call - but that either didn't create enough friction or would make the game go forever.
+- Characters are reactors. They see what happened, think, say a line, update. They don't act
+- The referee only judges if a round was won, lost, or ongoing
+- The situation driver moves the scene forward - basically adds action after all the characters have reacted
+- The finale narrates the ending
 
 ![](turn_diagram.png)
 
-Each turn, only a few of the characters speak - there is no need to overwhelm the player with text. I know it's a text-based game but no one wants to feel like they are being deluged with info. The question is - which characters should speak then? I tried an explicit character selection LLM call but it felt like it was making too obvious choices - so I made the character selection semi-random - as a way to introduce more friction.
+For who to speak at each turn,  I opted for semi-random sampling. If you address a character by name, he reacts - otherwise it's random. This could also be a separate LLM call but this heuristic seemed to work well enough.
 
-The most interesting part is the disposition matrix: every character holds a private, free-text stance toward the player, toward each other character, and toward themselves. Free text, including delta of how their opinions change across turns - and this feeds into the scene.
-
-The game got fun roughly in proportion to how little each model call was allowed to do. Too many things at once leads to a too general experience.
-
-I experimented with a reasoning model, and its hidden thinking was a problem - and length varies too much from model families. So I turned hidden thinking off - and gave every character an explicit reasoning output field instead: one or two sentences of private, in-character thought before the spoken line. That made it easier to debug too - as I could easily see what went into each character decision and what their internal thoughts were before saying something. They felt like actual characters, written by humans.
+There's also a disposition matrix: every character holds a private, free-text stance toward the player, toward each other character, and have a context on how they currently feel. This made the game more interesting as this is a real lever in playing social dynamics.
 
 One issue that I battled with was pronouns. For immersion purposes, the narration is towards "you", the player. However, the characters got confused when they say the narration - they thought "you" was them.
 
-Playtesting was the genuinely hard part, harder than any engine code. There's no terminal-bench for "I did something genuinely smart and I believe I should have been rewarded for it".
+Playtesting was the genuinely timeconsuming part. Luckily, I found the game fun enough so that it wasn't a bother.
 
 I built some very basic benchmarks - where it is obvious what should happen. For example, you swear at a character who doesn't like it - he thinks less of you. Or you do something that accomplishes the goal - the finale says so. Basically all the ways that I could think of to come  up with really obvious scenarios. They did regress as I was tweaking the scenarios, so this was very helpful way to catch it without playtesting garbage.
-
-Most of the heavy lifting in the validation was me playtesting. It was actually fun and I enjoyed it! Obviously, it would have been better if I had friends helping me but building something and making it playtestable at hackathon pace is a hard task. By the time I had something to share, the deadline was already too close for feedback.
 
 I iterated locally on llama.cpp and Qwen3.6-27B. Used Modal to release on Gemma4-31B, which benchmarks better on creative writing. I had some issues with navigating the cold start problem but Modal was kind enough to provide enough credits for this hackathon. I didn't benchmark models for this game specifically - just didn't have the time but it's probably worth doing.
 
@@ -45,4 +39,3 @@ The UI is the part I would have liked to spend more time on - if only it didn't 
 ![](end_screen.png)
 
 There are two built-in scenarios - I found them to work better than others. For example, I experimented with High School Reunion that kind of worked and Shark Tank that didn't - the latter required making up facts and metrics. However, I focused on the engine, so adding scenarios should work for anyone who wants to try - I'm certain that more creative scenarios exist, it's just a matter of playing with it.
-

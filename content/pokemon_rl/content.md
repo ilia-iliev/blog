@@ -23,7 +23,7 @@ Initially, I thought I could come up with a good rule-based bot without knowing 
 
 So I built an architecture that encodes the state and predicts the next action. I trained it on the dumps of the publicly available games. The network learnt to play all the decks at once. At the time, I was certain this wouldn't produce a solid bot but it was a starting point. This is also known as Behaviour Cloning (BC).
 
-[network.png]
+![](network.png)
 
 As an experiment, I released this BC network piloting some of the popular decks. To my surprise, it performed surprisingly well. It hit a rating of over 1000. That was at a time when half the ladder was one archetype (Marnie), so the network learnt how to pilot it just by watching what everyone else was doing; without even been tuned to a specific decklist. I got excited as I thought I could improve on it. As the meta evolved, this deck no longer worked as well, though it remained strong.
 
@@ -33,7 +33,7 @@ Okay, so I have the BC network. I parsed the existing games for analysis - and I
 
 I froze the card embeddings and the critic. Then I started tuning the network for a particular decklist. I used two-tier sampling - for each match, opponent would be sampled based on archetype popularity and then it would randomly choose one of my variants to play against. The winner/losr would get a learning signal through PPO. A self-reinforcing ladder.
 
-[ladder.png]
+![](ladder.png)
 
 I noticed that the signal was way too noisy. Basically, the critic overfit - it had remembered all the board states and was very confident that a board state would lead to win or loss - even for very early turn-1 board states with no clear advantage. That's an inherent issue with training solely on outcomes - you know who won but you don't know how close it was. I fixed it by using my BC network to pilot the two decks, starting from a board position and doing 10 playthroughs with different seeds. The signal feeding into the critic would be smoothed - much better than binary win/lose. This is rather expensive to simulate, so I couldn't really commit to more than 20k board states. Limited, but better than nothing. And it did the job to fix the critic's overconfidence.
 
