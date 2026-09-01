@@ -9,6 +9,8 @@ A quick note on the setup: these benchmarks used the [tinygrad P2P driver patch]
 
 How to measure degradation? There are basically two ways - the first one is to do simple metrics like calculating perplexity or KLD - measuring the difference in the produced tokens, compared to the baseline. The second one is an outcome-driven - performing task(s) at various levels of quantization and measuring at what point the tasks start to fail. I opted for the second option, because "diverging" from the baseline doesn't necessarily mean worse - the model can reach a goal using a different rollout. Extra caution must be done when choosing a suitable task to benchmark on.
 
+![](kld.png)
+
 Terminal/coding tasks is what I care about, so opted for terminal-bench. It's an industry standard and all the new model releases typically include it. It's a good measure of LLM-in-a-harness - making the LLM complete terminal  tasks within a docker container. There are 80 tasks total - ranging from setting up a Git server to training a classifier or downloading and cutting a specific youtube video.
 
 My first instinct was that tasks would rigidly  either pass or fail across retries - with a couple of exceptions. If true, this would greatly simplify the test. I used Unsloth's Q8_K_XL quant on llama.cpp and the result were far messier than I expected:
