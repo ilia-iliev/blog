@@ -8,9 +8,8 @@ const supportedExtensions = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 function imageFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const filePath = path.join(dir, entry.name);
-    if (entry.isDirectory()) return imageFiles(filePath);
-    return supportedExtensions.has(path.extname(entry.name).toLowerCase()) ? [filePath] : [];
+    if (!entry.isFile() || !supportedExtensions.has(path.extname(entry.name).toLowerCase())) return [];
+    return [path.join(dir, entry.name)];
   });
 }
 
@@ -18,13 +17,13 @@ let generated = 0;
 for (const entry of fs.readdirSync(contentDir, { withFileTypes: true })) {
   if (!entry.isDirectory()) continue;
 
-  const imagesDir = path.join(contentDir, entry.name, "images");
-  if (!fs.existsSync(imagesDir)) continue;
+  const postDir = path.join(contentDir, entry.name);
+  if (!fs.existsSync(path.join(postDir, "content.md"))) continue;
 
-  const resizedDir = path.join(imagesDir, ".resized");
+  const resizedDir = path.join(postDir, ".resized");
   fs.rmSync(resizedDir, { recursive: true, force: true });
 
-  for (const sourcePath of imageFiles(imagesDir)) {
+  for (const sourcePath of imageFiles(postDir)) {
     const metadata = await sharp(sourcePath).metadata();
     if (!metadata.width || metadata.width <= MAX_WIDTH) continue;
 
@@ -34,7 +33,7 @@ for (const entry of fs.readdirSync(contentDir, { withFileTypes: true })) {
     const original = fs.readFileSync(sourcePath);
     if (resized.length >= original.length) continue;
 
-    const outputPath = path.join(resizedDir, path.relative(imagesDir, sourcePath));
+    const outputPath = path.join(resizedDir, path.basename(sourcePath));
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, resized);
     generated++;

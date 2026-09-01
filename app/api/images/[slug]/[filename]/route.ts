@@ -33,8 +33,8 @@ export async function GET(
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const imagesDir = path.join(process.cwd(), "content", slug, "images");
-  const originalPath = path.join(imagesDir, filename);
+  const postDir = path.join(process.cwd(), "content", slug);
+  const originalPath = path.join(postDir, filename);
 
   if (!fs.existsSync(originalPath)) {
     return new NextResponse("Not found", { status: 404 });
@@ -49,7 +49,7 @@ export async function GET(
   }
 
   // Serve cached resized version if available
-  const resizedDir = path.join(imagesDir, ".resized");
+  const resizedDir = path.join(postDir, ".resized");
   const resizedPath = path.join(resizedDir, filename);
 
   if (fs.existsSync(resizedPath)) {
