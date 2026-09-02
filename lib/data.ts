@@ -71,24 +71,36 @@ function humanizeSlug(slug: string): string {
     .join(" ");
 }
 
-function parseNote(raw: string): { link?: string; content: string } {
-  const lines = raw.split("\n");
-  let start = 0;
-  let link: string | undefined;
+const headerLine = /^([A-Z]+):(.*)$/;
 
-  if (lines[0]?.startsWith("LINK:")) {
-    link = lines[0].slice("LINK:".length).trim();
-    start = 1;
-    while (lines[start]?.trim() === "") start++;
+function parseNote(raw: string): { header: Record<string, string>; content: string } {
+  const lines = raw.split("\n");
+  const header: Record<string, string> = {};
+  let start = 0;
+
+  for (; start < lines.length; start++) {
+    const match = lines[start].match(headerLine);
+    if (!match) break;
+    header[match[1]] = match[2].trim();
   }
 
-  return { link, content: lines.slice(start).join("\n").trim() };
+  return { header, content: lines.slice(start).join("\n").trim() };
+}
+
+function readNote(subdir: string, file: string) {
+  const slug = file.replace(/\.md$/, "");
+  const { header, content } = parseNote(fs.readFileSync(path.join(contentDir, subdir, file), "utf-8"));
+  return {
+    slug,
+    title: header.TITLE ?? humanizeSlug(slug),
+    author: header.AUTHOR,
+    link: header.LINK,
+    content,
+  };
 }
 
 interface NoteMeta {
   date: string;
-  title?: string;
-  author?: string;
 }
 
 function loadNotesMeta(): Record<string, NoteMeta> {
@@ -125,19 +137,13 @@ function listNotes(subdir: string): NoteEntry[] {
     .readdirSync(dir)
     .filter((file) => file.endsWith(".md") && file.toLowerCase() !== "readme.md")
     .map((file) => {
-      const slug = file.replace(/\.md$/, "");
       const key = `${subdir}/${file}`;
       if (!meta[key]) {
         meta[key] = { date: today };
         mutated = true;
       }
-      return {
-        slug,
-        title: meta[key].title ?? humanizeSlug(slug),
-        author: meta[key].author,
-        date: meta[key].date,
-        recommended: recommended.has(key),
-      };
+      const { slug, title, author } = readNote(subdir, file);
+      return { slug, title, author, date: meta[key].date, recommended: recommended.has(key) };
     });
 
   if (mutated) saveNotesMeta(meta);
@@ -145,18 +151,14 @@ function listNotes(subdir: string): NoteEntry[] {
 }
 
 function getNote(slug: string, subdir: "books" | "papers") {
-  const filePath = path.join(contentDir, subdir, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return undefined;
+  const file = `${slug}.md`;
+  if (!fs.existsSync(path.join(contentDir, subdir, file))) return undefined;
 
-  const key = `${subdir}/${slug}.md`;
-  const meta = loadNotesMeta()[key];
+  const key = `${subdir}/${file}`;
   return {
-    slug,
-    title: meta?.title ?? humanizeSlug(slug),
-    author: meta?.author,
-    date: meta?.date ?? "",
+    ...readNote(subdir, file),
+    date: loadNotesMeta()[key]?.date ?? "",
     recommended: loadRecommended().has(key),
-    ...parseNote(fs.readFileSync(filePath, "utf-8")),
   };
 }
 
