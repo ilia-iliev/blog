@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 
 const contentDir = path.join(process.cwd(), "content");
-const notesFile = path.join(contentDir, "notes.json");
 const recommendedFile = path.join(contentDir, "recommended.json");
 
 export interface BlogPost {
@@ -95,24 +94,9 @@ function readNote(subdir: string, file: string) {
     title: header.TITLE ?? humanizeSlug(slug),
     author: header.AUTHOR,
     link: header.LINK,
+    date: header.DATE ?? "",
     content,
   };
-}
-
-interface NoteMeta {
-  date: string;
-}
-
-function loadNotesMeta(): Record<string, NoteMeta> {
-  try {
-    return JSON.parse(fs.readFileSync(notesFile, "utf-8"));
-  } catch {
-    return {};
-  }
-}
-
-function saveNotesMeta(meta: Record<string, NoteMeta>) {
-  fs.writeFileSync(notesFile, JSON.stringify(meta, null, 2) + "\n");
 }
 
 function loadRecommended(): Set<string> {
@@ -128,25 +112,16 @@ function listNotes(subdir: string): NoteEntry[] {
   const dir = path.join(contentDir, subdir);
   if (!fs.existsSync(dir)) return [];
 
-  const meta = loadNotesMeta();
   const recommended = loadRecommended();
-  const today = new Date().toISOString().slice(0, 10);
-  let mutated = false;
 
   const entries = fs
     .readdirSync(dir)
     .filter((file) => file.endsWith(".md") && file.toLowerCase() !== "readme.md")
     .map((file) => {
-      const key = `${subdir}/${file}`;
-      if (!meta[key]) {
-        meta[key] = { date: today };
-        mutated = true;
-      }
-      const { slug, title, author } = readNote(subdir, file);
-      return { slug, title, author, date: meta[key].date, recommended: recommended.has(key) };
+      const { slug, title, author, date } = readNote(subdir, file);
+      return { slug, title, author, date, recommended: recommended.has(`${subdir}/${file}`) };
     });
 
-  if (mutated) saveNotesMeta(meta);
   return entries.sort((a, b) => b.date.localeCompare(a.date));
 }
 
@@ -154,11 +129,9 @@ function getNote(slug: string, subdir: "books" | "papers") {
   const file = `${slug}.md`;
   if (!fs.existsSync(path.join(contentDir, subdir, file))) return undefined;
 
-  const key = `${subdir}/${file}`;
   return {
     ...readNote(subdir, file),
-    date: loadNotesMeta()[key]?.date ?? "",
-    recommended: loadRecommended().has(key),
+    recommended: loadRecommended().has(`${subdir}/${file}`),
   };
 }
 
