@@ -62,14 +62,6 @@ export interface PaperEntry extends NoteEntry {
   content: string;
 }
 
-function humanizeSlug(slug: string): string {
-  return slug
-    .replace(/_/g, " ")
-    .split(" ")
-    .map((word) => (/^[a-z]/.test(word) ? word[0].toUpperCase() + word.slice(1) : word))
-    .join(" ");
-}
-
 const headerLine = /^([A-Z]+):(.*)$/;
 
 function parseNote(raw: string): { header: Record<string, string>; content: string } {
@@ -87,14 +79,13 @@ function parseNote(raw: string): { header: Record<string, string>; content: stri
 }
 
 function readNote(subdir: string, file: string) {
-  const slug = file.replace(/\.md$/, "");
   const { header, content } = parseNote(fs.readFileSync(path.join(contentDir, subdir, file), "utf-8"));
   return {
-    slug,
-    title: header.TITLE ?? humanizeSlug(slug),
+    slug: file.replace(/\.md$/, ""),
+    title: header.TITLE,
     author: header.AUTHOR,
     link: header.LINK,
-    date: header.DATE ?? "",
+    date: header.DATE,
     content,
   };
 }

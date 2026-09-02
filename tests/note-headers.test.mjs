@@ -36,5 +36,5 @@ function checkNotes(subdir, keys) {
   });
 }
 
-checkNotes("books", ["AUTHOR", "DATE"]);
-checkNotes("papers", ["LINK", "DATE"]);
+checkNotes("books", ["TITLE", "AUTHOR", "DATE"]);
+checkNotes("papers", ["TITLE", "LINK", "DATE"]);
