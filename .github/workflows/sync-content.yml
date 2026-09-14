@@ -17,11 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           submodules: true
-      - run: git submodule update --remote content/books content/papers
-      - name: Commit and push if the pointers moved
+      - name: Bump the pointers and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Update content submodules" || exit 0
-          git push
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            git submodule update --remote content/books content/papers
+            git commit -am "Update content submodules" || exit 0
+            git push && exit 0
+            echo "push rejected, retrying ($attempt)"
+          done
+          echo "could not push after 3 attempts" >&2
+          exit 1
