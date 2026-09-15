@@ -1,4 +1,4 @@
-I made a RL bot that plays Pokémon TCG
+# I made a RL bot that plays Pokémon TCG
 2026-08-19
 
 I signed up for kaggle competition on [Pokémon TCG](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle). As this is the first time I dabbled with RL and Pokemon, I'm writing about my experience.

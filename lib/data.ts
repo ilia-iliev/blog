@@ -17,7 +17,7 @@ export interface BlogPostWithContent extends BlogPost {
 function parsePost(raw: string): Omit<BlogPostWithContent, "slug"> {
   const lines = raw.split("\n");
   return {
-    title: lines[0].trim(),
+    title: lines[0].replace(/^#\s*/, "").trim(),
     date: lines[1].trim(),
     content: lines.slice(2).join("\n").trim(),
   };

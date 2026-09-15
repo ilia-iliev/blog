@@ -87,6 +87,16 @@ test("every post resolves by slug and has a title", () => {
   }
 });
 
+// The title lives in the source as a real Markdown heading; the parser reads it
+// from there, so a post that drops the # silently keeps the marker-less line.
+test("every post opens with a Markdown h1", () => {
+  const missing = posts
+    .map((post) => [post.slug, fs.readFileSync(path.join(contentDir, post.slug, "content.md"), "utf8").split("\n")[0]])
+    .filter(([, first]) => !first.startsWith("# "))
+    .map(([slug]) => slug);
+  assert.deepEqual(missing, [], `Posts whose first line is not a "# " heading:\n${missing.join("\n")}`);
+});
+
 // loadRecommended() swallows every error, so a typo here silently drops the
 // whole list and a renamed note silently loses its recommendation.
 test("recommended.json lists existing notes", () => {

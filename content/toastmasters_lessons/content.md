@@ -1,4 +1,4 @@
-Lessons from Toastmasters
+# Lessons from Toastmasters
 2026-05-29
 
 I consider myself an engineer and public speaking is not my strongest suit. An ex-manager convinced me that improving my communication skills can do wonders for me, so I joined Sofia S&L Toastmasters Club. This is my blogpost about what I learnt over 2 years of club sessions.

@@ -1,4 +1,4 @@
-Dual 3090: Qwen3.6-27B
+# Dual 3090: Qwen3.6-27B
 2026-06-05
 
 I fell into the rabbit hole of optimizing Qwen3.6-27B to run as fast and reliably as possible. I found that most online advice focuses on speed - tokens per second - and largely ignores quality degradation. I'm sharing my journey and the lessons learnt.

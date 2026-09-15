@@ -1,4 +1,4 @@
-The Rise of Audio in AI
+# The Rise of Audio in AI
 2026-05-05
 
 This is an exploration of how audio is represented in ML/AI models. I am sharing my understanding of how models understand audio, told through the history of notable breakthroughs in the field.
