@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
+import { isImageFilename, isSlug } from "@/lib/security.mjs";
 
 const MAX_WIDTH = 800;
 
@@ -29,7 +30,7 @@ export async function GET(
 ) {
   const { slug, filename } = await params;
 
-  if (slug.includes("..") || filename.includes("..")) {
+  if (!isSlug(slug) || !isImageFilename(filename)) {
     return new NextResponse("Not found", { status: 404 });
   }
 

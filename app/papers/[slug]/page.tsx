@@ -1,5 +1,6 @@
 import Markdown from "@/components/Markdown";
 import { getPaperBySlug } from "@/lib/data";
+import { isSafeContentUrl } from "@/lib/security.mjs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -22,7 +23,7 @@ export default async function PaperPage({ params }: PageProps) {
         <header className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold mb-2 leading-tight">{paper.title}</h1>
           {paper.date && <p className="text-sm text-gray-500 tabular-nums mb-2">{paper.date}</p>}
-          {paper.link && (
+          {paper.link && isSafeContentUrl(paper.link) && (
             <a
               href={paper.link}
               target="_blank"

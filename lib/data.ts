@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { isSafeContentUrl, isSlug } from "./security.mjs";
 
 const contentDir = path.join(process.cwd(), "content");
 const recommendedFile = path.join(contentDir, "recommended.json");
@@ -40,6 +41,7 @@ export function getAllPosts(): BlogPost[] {
 }
 
 export function getPostBySlug(slug: string): BlogPostWithContent | undefined {
+  if (!isSlug(slug)) return undefined;
   const filePath = path.join(contentDir, slug, "content.md");
   if (!fs.existsSync(filePath)) return undefined;
   return { slug, ...parsePost(fs.readFileSync(filePath, "utf-8")) };
@@ -117,6 +119,7 @@ function listNotes(subdir: string): NoteEntry[] {
 }
 
 function getNote(slug: string, subdir: "books" | "papers") {
+  if (!isSlug(slug)) return undefined;
   const file = `${slug}.md`;
   if (!fs.existsSync(path.join(contentDir, subdir, file))) return undefined;
 
@@ -157,7 +160,11 @@ export function getAboutParagraphs(): AboutSegment[][] {
     let last = 0;
     for (const match of paragraph.matchAll(linkRe)) {
       if (match.index! > last) segments.push({ type: "text", text: paragraph.slice(last, match.index!) });
-      segments.push({ type: "link", text: match[1], href: match[2] });
+      if (isSafeContentUrl(match[2])) {
+        segments.push({ type: "link", text: match[1], href: match[2] });
+      } else {
+        segments.push({ type: "text", text: match[1] });
+      }
       last = match.index! + match[0].length;
     }
     if (last < paragraph.length) segments.push({ type: "text", text: paragraph.slice(last) });
