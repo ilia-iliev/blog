@@ -1,21 +1,26 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { getAboutParagraphs } from "@/lib/data";
 
 export default function About() {
   const paragraphs = getAboutParagraphs();
+  const common = { alt: "Profile Photo", fill: true, priority: true };
+  const {
+    props: { srcSet: desktop },
+  } = getImageProps({ ...common, src: "/me.jpg", sizes: "300px" });
+  const {
+    props: { srcSet: mobile, ...rest },
+  } = getImageProps({ ...common, src: "/me-small.jpg", sizes: "128px" });
 
   return (
-    <main className="container mx-auto px-4 py-12">
+    <main className="container mx-auto px-4 pt-2 pb-12 md:py-12">
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center md:items-start">
         <div className="w-full md:w-1/3 flex justify-center">
-          <div className="relative w-64 h-64 md:w-full md:h-auto aspect-square rounded-full overflow-hidden border-4 border-black/5">
-            <Image
-              src="/me.jpg"
-              alt="Profile Photo"
-              fill
-              className="object-cover"
-              priority
-            />
+          <div className="relative w-32 h-32 md:w-full md:h-auto aspect-square rounded-full overflow-hidden md:border-4 border-black/5">
+            <picture>
+              <source media="(min-width: 768px)" srcSet={desktop} sizes="300px" />
+              <source srcSet={mobile} sizes="128px" />
+              <img {...rest} alt="Profile Photo" className="object-cover" />
+            </picture>
           </div>
         </div>
 
