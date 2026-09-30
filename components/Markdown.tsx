@@ -49,6 +49,8 @@ export default function Markdown({
             <img
               src={resolvedSrc}
               alt={alt}
+              loading="lazy"
+              decoding="async"
               className="max-w-full h-auto rounded-lg mx-auto my-8"
             />
           );

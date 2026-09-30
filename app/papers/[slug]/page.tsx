@@ -1,8 +1,14 @@
 import Markdown from "@/components/Markdown";
-import { getPaperBySlug } from "@/lib/data";
+import { getAllPapers, getPaperBySlug } from "@/lib/data";
 import { isSafeContentUrl } from "@/lib/security.mjs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getAllPapers().map(({ slug }) => ({ slug }));
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;

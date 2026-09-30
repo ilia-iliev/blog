@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { getBookBySlug, getPaperBySlug, getPostBySlug } from "../lib/data.ts";
-import { isImageFilename, isSafeContentUrl, isSlug } from "../lib/security.mjs";
+import { isSafeContentUrl, isSlug } from "../lib/security.mjs";
 
 const postSlug = fs.readdirSync("content", { withFileTypes: true })
   .find((entry) => entry.isDirectory() && fs.existsSync(path.join("content", entry.name, "content.md"))).name;
@@ -14,14 +14,10 @@ test("file-backed pages reject slugs outside their collections", () => {
   assert.equal(getPostBySlug("../books"), undefined);
 });
 
-test("image requests accept only normal slugs and image filenames", () => {
+test("slugs are plain names", () => {
   assert.equal(isSlug(postSlug), true);
   assert.equal(isSlug("../about"), false);
   assert.equal(isSlug("%2e%2e"), false);
-  assert.equal(isImageFilename("photo.jpg"), true);
-  assert.equal(isImageFilename("content.md"), false);
-  assert.equal(isImageFilename("nested/photo.jpg"), false);
-  assert.equal(isImageFilename("../photo.jpg"), false);
 });
 
 test("content links cannot use executable or protocol-relative URLs", () => {

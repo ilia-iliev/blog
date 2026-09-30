@@ -1,7 +1,13 @@
 import Markdown from "@/components/Markdown";
-import { getBookBySlug } from "@/lib/data";
+import { getAllBooks, getBookBySlug } from "@/lib/data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getAllBooks().map(({ slug }) => ({ slug }));
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;

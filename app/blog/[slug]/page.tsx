@@ -1,6 +1,12 @@
 import Markdown from "@/components/Markdown";
-import { getPostBySlug } from "@/lib/data";
+import { getAllPosts, getPostBySlug } from "@/lib/data";
 import { notFound } from "next/navigation";
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getAllPosts().map(({ slug }) => ({ slug }));
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -20,14 +26,7 @@ export default async function BlogPost({ params }: PageProps) {
           <time className="text-gray-600">{post.date}</time>
         </header>
         <div className="text-lg max-w-none">
-          <Markdown
-            content={post.content}
-            imageBasePath={
-              process.env.NODE_ENV === "production"
-                ? `/blog-images/${post.slug}`
-                : `/api/images/${post.slug}`
-            }
-          />
+          <Markdown content={post.content} imageBasePath={`/blog-images/${post.slug}`} />
         </div>
       </article>
     </main>

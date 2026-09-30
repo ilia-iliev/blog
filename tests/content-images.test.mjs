@@ -39,7 +39,6 @@ const referencedImages = new Set(markdown.flatMap((entry) => entry.images));
 const imageFiles = fs.readdirSync(contentDir, { recursive: true, withFileTypes: true })
   .filter((entry) =>
     entry.isFile() &&
-    !entry.parentPath.split(path.sep).includes(".resized") &&
     supportedExtensions.has(path.extname(entry.name).toLowerCase()),
   )
   .map((entry) => path.join(entry.parentPath, entry.name));
@@ -50,7 +49,7 @@ const posts = markdown.filter((entry) => path.basename(entry.markdownPath) === "
 const notes = markdown.filter((entry) => noteDirs.includes(path.dirname(entry.markdownPath)));
 
 const publishDir = fs.mkdtempSync(path.join(os.tmpdir(), "blog-images-"));
-copyBlogImages(publishDir);
+await copyBlogImages(publishDir);
 after(() => fs.rmSync(publishDir, { recursive: true, force: true }));
 
 test("local images referenced by Markdown exist", () => {
@@ -63,9 +62,8 @@ test("every image is referenced by Markdown", () => {
   assert.deepEqual(unreferenced, [], `Unreferenced image files:\n${unreferenced.join("\n")}`);
 });
 
-// In production posts load their images from /blog-images instead of the
-// /api/images route, so a reference the copy script does not publish 404s only
-// once deployed.
+// Posts load their images from /blog-images, so a reference the copy script
+// does not publish 404s.
 test("every post image is published under blog-images", () => {
   const missing = posts.flatMap(({ markdownPath, images }) => {
     const postDir = path.dirname(markdownPath);
