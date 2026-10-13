@@ -9,3 +9,5 @@ About me:
 - Ex-competitive card game player
 - Amateur runner - marathon in 4h26m
 - Based in Sofia, Bulgaria
+
+Want to work on cool tech? [Get in touch](mailto:ilia.iliev94@gmail.com)
