@@ -1,11 +1,11 @@
-Engineer. Occasionally I do write-ups
+I'm Ilia Iliev - an engineer into AI and ML
 
 About me:
 
-- AI / Machine Learning Engineer since 2018
-- MEng in Computer Engineering
-- Amateur runner - half-marathon in 1h56m
-- Made some money playing a videogame - [TES:L](https://en.wikipedia.org/wiki/The_Elder_Scrolls:_Legends)
-- Currently based in Sofia, Bulgaria
-- Previously lived in Glasgow and Singapore
-- Backpacked in Southeast Asia
+- In industry since 2018
+- Recommenders, classifiers and LLMs
+- MEng in Computer Engineering, Strathclyde
+- Into local LLM inference
+- Ex-competitive card game player
+- Amateur runner - marathon in 4h26m
+- Based in Sofia, Bulgaria
