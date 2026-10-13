@@ -55,6 +55,14 @@ function checkNotes(subdir, list, get, required) {
     }
   });
 
+  // The page renders the title as the h1, so headings in the body start at ##.
+  test(`every note in ${subdir} leaves h1 to the title`, { skip }, () => {
+    const offenders = notes()
+      .filter(([, note]) => note.content.split("\n").some((line) => line.startsWith("# ")))
+      .map(([slug]) => `${subdir}/${slug}.md`);
+    assert.deepEqual(offenders, [], `Notes with a "# " heading in the body:\n${offenders.join("\n")}`);
+  });
+
   checkDatedList(subdir, entries, skip);
 }
 

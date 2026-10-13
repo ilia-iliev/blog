@@ -33,11 +33,6 @@ for (const [kind, list, get] of [
   ["books", getAllBooks, getBookBySlug],
   ["papers", getAllPapers, getPaperBySlug],
 ]) {
-  test(`every entry in ${kind} has an ISO date`, () => {
-    const bad = list().filter(({ date }) => !/^\d{4}-\d{2}-\d{2}$/.test(date)).map(({ slug, date }) => `${slug}: ${date}`);
-    assert.deepEqual(bad, [], `Dates must be YYYY-MM-DD:\n${bad.join("\n")}`);
-  });
-
   test(`every entry in ${kind} has a description`, () => {
     const missing = list().filter(({ slug }) => !getExcerpt(get(slug).content)).map(({ slug }) => slug);
     assert.deepEqual(missing, [], `No prose paragraph to describe:\n${missing.join("\n")}`);

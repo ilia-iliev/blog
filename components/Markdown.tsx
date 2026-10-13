@@ -20,6 +20,7 @@ export default function Markdown({
         h1: ({ children }) => <h1 className="text-3xl font-bold mt-10 mb-4">{children}</h1>,
         h2: ({ children }) => <h2 className="text-2xl font-bold mt-8 mb-3">{children}</h2>,
         h3: ({ children }) => <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>,
+        h4: ({ children }) => <h4 className="text-lg font-bold mt-5 mb-2">{children}</h4>,
         p: ({ children }) => <p className="mb-6 leading-relaxed">{children}</p>,
         ul: ({ children }) => <ul className="list-disc pl-6 mb-6 space-y-2 leading-relaxed">{children}</ul>,
         ol: ({ children }) => <ol className="list-decimal pl-6 mb-6 space-y-2 leading-relaxed">{children}</ol>,
