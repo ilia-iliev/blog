@@ -1,5 +1,12 @@
 import { getImageProps } from "next/image";
 import { getAboutParagraphs } from "@/lib/data";
+import { pageMetadata } from "@/lib/site";
+
+export const metadata = pageMetadata({
+  path: "/about",
+  title: "About",
+  description: "Ilia Iliev is an AI / Machine Learning engineer based in Sofia, Bulgaria.",
+});
 
 export default function About() {
   const paragraphs = getAboutParagraphs();

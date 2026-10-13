@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/data";
 import EntryList from "@/components/EntryList";
+import { pageMetadata } from "@/lib/site";
+
+export const metadata = pageMetadata({ path: "/" });
 
 export default function Home() {
   const posts = getAllPosts();

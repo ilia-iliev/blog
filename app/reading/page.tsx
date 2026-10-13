@@ -1,5 +1,12 @@
 import { getAllBooks, getAllPapers } from "@/lib/data";
 import EntryList from "@/components/EntryList";
+import { pageMetadata } from "@/lib/site";
+
+export const metadata = pageMetadata({
+  path: "/reading",
+  title: "Reading Notes",
+  description: "Notes on books and papers, guided by How to Read a Book.",
+});
 
 export default function ReadingPage() {
   const books = getAllBooks();

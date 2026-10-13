@@ -1,6 +1,7 @@
 import Markdown from "@/components/Markdown";
-import { getAllPapers, getPaperBySlug } from "@/lib/data";
+import { getAllPapers, getExcerpt, getPaperBySlug } from "@/lib/data";
 import { isSafeContentUrl } from "@/lib/security.mjs";
+import { pageMetadata } from "@/lib/site";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,6 +15,19 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const paper = getPaperBySlug(slug);
+  if (!paper) notFound();
+
+  return pageMetadata({
+    path: `/papers/${slug}`,
+    title: `${paper.title}: Paper Notes`,
+    description: getExcerpt(paper.content),
+    published: paper.date,
+  });
+}
+
 export default async function PaperPage({ params }: PageProps) {
   const { slug } = await params;
   const paper = getPaperBySlug(slug);
@@ -22,8 +36,8 @@ export default async function PaperPage({ params }: PageProps) {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
-      <Link href="/papers" className="text-sm text-gray-500 hover:underline mb-8 block">
-        ← Back to Papers
+      <Link href="/reading" className="text-sm text-gray-500 hover:underline mb-8 block">
+        ← Back to Reading
       </Link>
       <article>
         <header className="mb-8">

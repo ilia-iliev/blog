@@ -171,3 +171,22 @@ export function getAboutParagraphs(): AboutSegment[][] {
     return segments;
   });
 }
+
+const excerptLength = 160;
+
+export function getExcerpt(markdown: string): string {
+  const paragraph =
+    markdown
+      .replace(/^#.*$/gm, "")
+      .split(/\n\s*\n/)
+      .map((block) => block.trim())
+      .find((block) => block && !/^[!|>`<]/.test(block)) ?? "";
+  const text = paragraph
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^\s*([-*+]|\d+\.)\s+/gm, "")
+    .replace(/[*`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text.length <= excerptLength) return text;
+  return `${text.slice(0, text.lastIndexOf(" ", excerptLength - 1))}…`;
+}

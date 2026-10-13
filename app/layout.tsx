@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Source_Code_Pro } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/Header";
+import { siteDescription, siteName, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const sourceCodePro = Source_Code_Pro({
@@ -10,8 +11,10 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Ilia's Site",
-  description: "Thoughts on technology, AI, and living a simple life.",
+  metadataBase: new URL(siteUrl),
+  title: { default: siteName, template: `%s | ${siteName}` },
+  description: siteDescription,
+  authors: [{ name: siteName, url: siteUrl }],
   icons: {
     icon: [
       { url: "/favicon.ico" },

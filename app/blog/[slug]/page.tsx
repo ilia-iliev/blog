@@ -1,5 +1,6 @@
 import Markdown from "@/components/Markdown";
-import { getAllPosts, getPostBySlug } from "@/lib/data";
+import { getAllPosts, getExcerpt, getPostBySlug } from "@/lib/data";
+import { pageMetadata } from "@/lib/site";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -10,6 +11,19 @@ export function generateStaticParams() {
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+  if (!post) notFound();
+
+  return pageMetadata({
+    path: `/blog/${slug}`,
+    title: post.title,
+    description: getExcerpt(post.content),
+    published: post.date,
+  });
 }
 
 export default async function BlogPost({ params }: PageProps) {
