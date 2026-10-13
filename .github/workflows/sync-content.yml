@@ -19,7 +19,12 @@ jobs:
         with:
           ref: main
           submodules: true
-      - name: Bump the pointers and push
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Bump the pointers, test and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -28,6 +33,7 @@ jobs:
             git reset --hard origin/main
             git submodule update --remote content/books content/papers
             git commit -am "Update content submodules" || exit 0
+            npm test
             git push && exit 0
             echo "push rejected, retrying ($attempt)"
           done
