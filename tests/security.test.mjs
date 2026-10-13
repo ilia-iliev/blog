@@ -16,6 +16,9 @@ test("file-backed pages reject slugs outside their collections", () => {
 
 test("slugs are plain names", () => {
   assert.equal(isSlug(postSlug), true);
+  assert.equal(isSlug("DeepSeek-V4.1-Flash"), true);
+  assert.equal(isSlug(".."), false);
+  assert.equal(isSlug(".hidden"), false);
   assert.equal(isSlug("../about"), false);
   assert.equal(isSlug("%2e%2e"), false);
 });
