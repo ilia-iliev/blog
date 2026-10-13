@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { isSafeContentUrl, isSlug } from "./security.mjs";
+import { assertSlug, isSafeContentUrl, isSlug } from "./security.mjs";
 
 const contentDir = path.join(process.cwd(), "content");
 const recommendedFile = path.join(contentDir, "recommended.json");
@@ -34,7 +34,7 @@ export function getAllPosts(): BlogPost[] {
       const filePath = path.join(contentDir, entry.name, "content.md");
       if (!fs.existsSync(filePath)) return [];
       const { title, date } = parsePost(fs.readFileSync(filePath, "utf-8"));
-      return [{ slug: entry.name, title, date }];
+      return [{ slug: assertSlug(entry.name, `${entry.name}/content.md`), title, date }];
     });
 
   return posts.sort((a, b) => b.date.localeCompare(a.date));
@@ -112,7 +112,8 @@ function listNotes(subdir: string): NoteEntry[] {
     .filter((file) => file.endsWith(".md") && file.toLowerCase() !== "readme.md")
     .map((file) => {
       const { slug, title, author, date } = readNote(subdir, file);
-      return { slug, title, author, date, recommended: recommended.has(`${subdir}/${file}`) };
+      const source = `${subdir}/${file}`;
+      return { slug: assertSlug(slug, source), title, author, date, recommended: recommended.has(source) };
     });
 
   return entries.sort((a, b) => b.date.localeCompare(a.date));

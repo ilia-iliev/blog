@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { getBookBySlug, getPaperBySlug, getPostBySlug } from "../lib/data.ts";
-import { isSafeContentUrl, isSlug } from "../lib/security.mjs";
+import { assertSlug, isSafeContentUrl, isSlug } from "../lib/security.mjs";
 
 const postSlug = fs.readdirSync("content", { withFileTypes: true })
   .find((entry) => entry.isDirectory() && fs.existsSync(path.join("content", entry.name, "content.md"))).name;
@@ -29,4 +29,9 @@ test("content links cannot use executable or protocol-relative URLs", () => {
   assert.equal(isSafeContentUrl("/about"), true);
   assert.equal(isSafeContentUrl("javascript:alert(1)"), false);
   assert.equal(isSafeContentUrl("//example.com"), false);
+});
+
+test("content names that cannot be slugs fail loudly", () => {
+  assert.equal(assertSlug("speculative_decoding", "papers/speculative_decoding.md"), "speculative_decoding");
+  assert.throws(() => assertSlug("Check Paper (v2)", "papers/Check Paper (v2).md"), /papers\/Check Paper \(v2\)\.md/);
 });
