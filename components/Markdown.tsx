@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import { altFromFilename } from "@/lib/images";
 import remarkGfm from "remark-gfm";
 
 function isExternalUrl(url: string) {
@@ -38,7 +39,7 @@ export default function Markdown({
             {children}
           </a>
         ),
-        img: ({ src, alt = "" }) => {
+        img: ({ src, alt }) => {
           const imageSrc = typeof src === "string" ? src : "";
           const resolvedSrc =
             imageBasePath && !isExternalUrl(imageSrc) && !imageSrc.startsWith("/")
@@ -48,7 +49,7 @@ export default function Markdown({
             // eslint-disable-next-line @next/next/no-img-element -- Markdown images have dynamic dimensions.
             <img
               src={resolvedSrc}
-              alt={alt}
+              alt={alt || altFromFilename(imageSrc)}
               loading="lazy"
               decoding="async"
               className="max-w-full h-auto rounded-lg mx-auto my-8"

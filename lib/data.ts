@@ -191,3 +191,36 @@ export function getExcerpt(markdown: string): string {
   if (text.length <= excerptLength) return text;
   return `${text.slice(0, text.lastIndexOf(" ", excerptLength - 1))}…`;
 }
+
+export interface Article {
+  path: string;
+  title: string;
+  description: string;
+  published: string;
+}
+
+const articleKinds = {
+  blog: { list: getAllPosts, get: getPostBySlug, title: (title: string) => title },
+  books: { list: getAllBooks, get: getBookBySlug, title: (title: string) => `${title}: Book Notes` },
+  papers: { list: getAllPapers, get: getPaperBySlug, title: (title: string) => `${title}: Paper Notes` },
+};
+
+type ArticleKind = keyof typeof articleKinds;
+
+export function toArticle(
+  kind: ArticleKind,
+  entry: { slug: string; title: string; date: string; content: string },
+): Article {
+  return {
+    path: `/${kind}/${entry.slug}`,
+    title: articleKinds[kind].title(entry.title),
+    description: getExcerpt(entry.content),
+    published: entry.date,
+  };
+}
+
+export function getAllArticles(): Article[] {
+  return (Object.keys(articleKinds) as ArticleKind[])
+    .flatMap((kind) => articleKinds[kind].list().map(({ slug }) => toArticle(kind, articleKinds[kind].get(slug)!)))
+    .sort((a, b) => b.published.localeCompare(a.published));
+}

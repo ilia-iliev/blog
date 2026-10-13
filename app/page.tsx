@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/data";
 import EntryList from "@/components/EntryList";
-import { pageMetadata } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { pageMetadata, person } from "@/lib/site";
 
 export const metadata = pageMetadata({ path: "/" });
 
@@ -11,6 +12,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-4 pt-2 pb-12 max-w-3xl">
+      <JsonLd data={person} />
       <div className="flex justify-center mb-10">
         <Link href="/about" aria-label="About">
           <Image

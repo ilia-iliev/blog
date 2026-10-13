@@ -1,6 +1,7 @@
+import JsonLd from "@/components/JsonLd";
 import Markdown from "@/components/Markdown";
-import { getAllBooks, getBookBySlug, getExcerpt } from "@/lib/data";
-import { pageMetadata } from "@/lib/site";
+import { getAllBooks, getBookBySlug, toArticle } from "@/lib/data";
+import { articleJsonLd, pageMetadata } from "@/lib/site";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -19,12 +20,7 @@ export async function generateMetadata({ params }: PageProps) {
   const book = getBookBySlug(slug);
   if (!book) notFound();
 
-  return pageMetadata({
-    path: `/books/${slug}`,
-    title: `${book.title}: Book Notes`,
-    description: getExcerpt(book.content),
-    published: book.date,
-  });
+  return pageMetadata(toArticle("books", book));
 }
 
 export default async function BookPage({ params }: PageProps) {
@@ -35,6 +31,7 @@ export default async function BookPage({ params }: PageProps) {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
+      <JsonLd data={articleJsonLd(toArticle("books", book))} />
       <Link href="/reading" className="text-sm text-gray-500 hover:underline mb-8 block">
         ← Back to Reading
       </Link>

@@ -1,6 +1,7 @@
+import JsonLd from "@/components/JsonLd";
 import Markdown from "@/components/Markdown";
-import { getAllPosts, getExcerpt, getPostBySlug } from "@/lib/data";
-import { pageMetadata } from "@/lib/site";
+import { getAllPosts, getPostBySlug, toArticle } from "@/lib/data";
+import { articleJsonLd, pageMetadata } from "@/lib/site";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -18,12 +19,7 @@ export async function generateMetadata({ params }: PageProps) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  return pageMetadata({
-    path: `/blog/${slug}`,
-    title: post.title,
-    description: getExcerpt(post.content),
-    published: post.date,
-  });
+  return pageMetadata(toArticle("blog", post));
 }
 
 export default async function BlogPost({ params }: PageProps) {
@@ -34,6 +30,7 @@ export default async function BlogPost({ params }: PageProps) {
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">
+      <JsonLd data={articleJsonLd(toArticle("blog", post))} />
       <article>
         <header className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{post.title}</h1>

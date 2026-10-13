@@ -1,6 +1,7 @@
 import { getImageProps } from "next/image";
 import { getAboutParagraphs } from "@/lib/data";
-import { pageMetadata } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { pageMetadata, person, profiles } from "@/lib/site";
 
 export const metadata = pageMetadata({
   path: "/about",
@@ -20,6 +21,7 @@ export default function About() {
 
   return (
     <main className="container mx-auto px-4 pt-2 pb-12 md:py-12">
+      <JsonLd data={person} />
       <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center md:items-start">
         <div className="w-full md:w-1/3 flex justify-center">
           <div className="relative w-32 h-32 md:w-full md:h-auto aspect-square rounded-full overflow-hidden md:border-4 border-black/5">
@@ -52,7 +54,7 @@ export default function About() {
             ))}
             <div className="flex gap-4 pt-2">
               <a
-                href="https://github.com/ilia-iliev"
+                href={profiles.github}
                 aria-label="GitHub"
                 className="hover:opacity-70 transition-opacity"
               >
@@ -66,7 +68,7 @@ export default function About() {
                 </svg>
               </a>
               <a
-                href="https://www.linkedin.com/in/ilia-iliev-7903a015a/"
+                href={profiles.linkedin}
                 aria-label="LinkedIn"
                 className="hover:opacity-70 transition-opacity"
               >
@@ -80,7 +82,7 @@ export default function About() {
                 </svg>
               </a>
               <a
-                href="https://bsky.app/profile/ilia-i.bsky.social"
+                href={profiles.bluesky}
                 aria-label="BlueSky"
                 className="hover:opacity-70 transition-opacity"
               >
