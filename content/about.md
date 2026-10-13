@@ -6,8 +6,9 @@ About me:
 - Recommenders, classifiers and LLMs
 - MEng in Computer Engineering, Strathclyde
 - Into local LLM inference
-- Ex-competitive card game player
+- Ex-competitive card game player - world #2 at [TES:L](https://en.wikipedia.org/wiki/The_Elder_Scrolls:_Legends)
 - Amateur runner - marathon in 4h26m
+- Like to cook
 - Based in Sofia, Bulgaria
 
 Want to work on cool tech? [Get in touch](mailto:ilia.iliev94@gmail.com)
