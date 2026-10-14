@@ -13,6 +13,7 @@ const encoders = {
   ".webp": (image) => image.webp(),
 };
 
+// Apply EXIF orientation before resizing: re-encoding strips the metadata.
 // Downscale to MAX_WIDTH and re-encode (PNGs as a palette). Keep the original
 // when that does not make it smaller.
 async function optimize(sourcePath) {
@@ -20,7 +21,7 @@ async function optimize(sourcePath) {
   const encode = encoders[path.extname(sourcePath).toLowerCase()];
   if (!encode) return original;
 
-  const optimized = await encode(sharp(original).resize(MAX_WIDTH, undefined, { withoutEnlargement: true })).toBuffer();
+  const optimized = await encode(sharp(original).autoOrient().resize(MAX_WIDTH, undefined, { withoutEnlargement: true })).toBuffer();
   return optimized.length < original.length ? optimized : original;
 }
 

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test, { after } from "node:test";
+import sharp from "sharp";
 import { copyBlogImages, supportedExtensions } from "../scripts/copy-blog-images.mjs";
 
 const contentDir = path.join(process.cwd(), "content");
@@ -51,6 +52,41 @@ const notes = markdown.filter((entry) => noteDirs.includes(path.dirname(entry.ma
 const publishDir = fs.mkdtempSync(path.join(os.tmpdir(), "blog-images-"));
 await copyBlogImages(publishDir);
 after(() => fs.rmSync(publishDir, { recursive: true, force: true }));
+
+test("published JPEGs apply EXIF orientation before resizing", async () => {
+  const fixtureDir = fs.mkdtempSync(path.join(contentDir, "orientation-test-"));
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "oriented-blog-images-"));
+
+  try {
+    fs.writeFileSync(path.join(fixtureDir, "content.md"), "![Oriented photo](photo.jpg)");
+    await sharp({ create: { width: 1200, height: 600, channels: 3, background: "red" } })
+      .composite([{
+        input: await sharp({ create: { width: 600, height: 600, channels: 3, background: "blue" } })
+          .png().toBuffer(),
+        left: 600,
+        top: 0,
+      }])
+      .withMetadata({ orientation: 8 })
+      .jpeg()
+      .toFile(path.join(fixtureDir, "photo.jpg"));
+
+    await copyBlogImages(outputDir);
+    const published = path.join(outputDir, path.basename(fixtureDir), "photo.jpg");
+    const metadata = await sharp(published).metadata();
+    assert.equal(metadata.width, 600);
+    assert.equal(metadata.height, 1200);
+    assert.equal(metadata.orientation, undefined);
+
+    // A 90-degree counterclockwise rotation moves the blue half to the top.
+    const top = await sharp(published).extract({ left: 300, top: 100, width: 1, height: 1 }).raw().toBuffer();
+    const bottom = await sharp(published).extract({ left: 300, top: 1100, width: 1, height: 1 }).raw().toBuffer();
+    assert.ok(top[2] > 240 && top[0] < 15, "top should be blue");
+    assert.ok(bottom[0] > 240 && bottom[2] < 15, "bottom should be red");
+  } finally {
+    fs.rmSync(fixtureDir, { recursive: true, force: true });
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+});
 
 test("local images referenced by Markdown exist", () => {
   const missing = [...referencedImages].filter((imagePath) => !fs.existsSync(imagePath));
