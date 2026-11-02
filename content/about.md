@@ -1,4 +1,4 @@
-I'm Ilia Iliev - an engineer into AI and ML
+I'm Ilia - an engineer into AI and ML
 
 About me:
 
