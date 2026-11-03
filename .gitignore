@@ -42,3 +42,7 @@ next-env.d.ts
 
 # generated blog image assets
 /public/blog-images
+
+# agent files written by next dev
+/AGENTS.md
+/CLAUDE.md
