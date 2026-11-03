@@ -83,10 +83,10 @@ I used an agent to semi-autonomously improve speed. By making it measure and sho
 
 ## Results
 
-| Submission | Public | Private | Scoring Time |
-|---|---:|---:|---:|
-| CoAtNet 224 + ConvNeXt 384 | 0.954 | 0.93997 | 446s |
-| CoAtNet 224 + ConvNeXt 224 | 0.95 | 0.937 | 264s |
+| CoAtNet px | ConvNeXt px | Public AUC | Private AUC | Inference |
+|---:|---:|---:|---:|---:|
+| 224 | 384 | 0.954 | 0.93997 | 446s |
+| 224 | 224 | 0.95 | 0.937 | 264s |
 
 That placed me at #22 in the efficiency scoreboard. 
 

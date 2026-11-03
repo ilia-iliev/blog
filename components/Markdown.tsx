@@ -31,6 +31,17 @@ export default function Markdown({
           ) : (
             <code className="bg-gray-100 px-1">{children}</code>
           ),
+        table: ({ children }) => (
+          <div className="overflow-x-auto mb-6">
+            <table className="border-collapse">{children}</table>
+          </div>
+        ),
+        th: ({ style, children }) => (
+          <th style={style} className="border-b-2 border-gray-400 px-4 py-2 font-bold">{children}</th>
+        ),
+        td: ({ style, children }) => (
+          <td style={style} className="border-b border-gray-300 px-4 py-2">{children}</td>
+        ),
         a: ({ href = "", children }) => (
           <a
             href={href}
