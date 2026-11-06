@@ -11,4 +11,4 @@ About me:
 - Amateur runner - marathon in 4h26m
 - Ex-competitive card game player - world #2 at [TES:L](https://en.wikipedia.org/wiki/The_Elder_Scrolls:_Legends)
 
-Want to work on cool tech? [Get in touch](mailto:ilia.iliev94@gmail.com)
+Want to work on cool tech? [Get in touch](mailto:ilia.iliev@ymail.com)
